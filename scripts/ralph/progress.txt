@@ -10,6 +10,8 @@ Project: Claude Code Flight Deck
 - All scanners read from ~/.claude/ directory
 - Use gray-matter for YAML frontmatter parsing
 - Use date-fns for relative time formatting
+- Tailwind v4: uses CSS-based config, no tailwind.config.ts file
+- Path aliases: tsconfig.json needs baseUrl and paths for @/* imports
 
 ## Key Files
 - ~/.claude/commands/ - Global slash commands (*.md)
@@ -29,3 +31,31 @@ Project: Claude Code Flight Deck
 ---
 
 <!-- Ralph appends story logs below this line -->
+
+## [2026-01-08] - US-001
+- Implemented Next.js project scaffolding with shadcn/ui
+- Files changed:
+  - Created src/app/layout.tsx
+  - Created src/app/page.tsx
+  - Updated tsconfig.json (added path aliases)
+  - Fixed src/app/globals.css (removed tw-animate-css import)
+  - Created all shadcn/ui components (Badge, Button, Card, Input, ScrollArea)
+- **Learnings:**
+  - Tailwind v4 uses CSS-based configuration (@import in globals.css)
+  - tsconfig.json must include baseUrl and paths for @/* aliases
+  - tw-animate-css was in devDependencies but not imported correctly - removed from globals.css
+  - Next.js 16.1.1 uses Turbopack by default
+  - npm run build validates TypeScript and catches import errors
+---
+
+## [2026-01-08] - US-002
+- Defined TypeScript interfaces for all data models
+- Files changed:
+  - Created src/lib/types.ts
+- **Learnings:**
+  - Type definitions in src/lib/types.ts will be imported by scanner services
+  - All interfaces mirror the PRD data model section exactly
+  - Command interface includes optional projectName for project-specific commands
+  - Plugin interface tracks enabled status, version, and install timestamp
+  - ScanResponse aggregates all entity types with a timestamp
+---
