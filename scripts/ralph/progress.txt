@@ -87,3 +87,19 @@ Project: Claude Code Flight Deck
   - Agent files in ~/.claude/agents/ follow same .md file pattern as commands
 ---
 
+## [2026-01-08] - US-005
+- Implemented Plugins scanner service
+- Files changed:
+  - Created src/lib/scanner/plugins.ts
+  - Updated prd.json (US-005 passes: true)
+- **Learnings:**
+  - installed_plugins.json uses "pluginName@source" as keys
+  - Each plugin key maps to an array of installations (can be multiple)
+  - settings.json has enabledPlugins object with boolean values
+  - Cross-reference by matching keys between the two JSON files
+  - Use nullish coalescing (??) to default to false when plugin not in settings
+  - Extract source from plugin key using .split('@')[1]
+  - installedAt is ISO string, convert to Date object for type safety
+  - Both files may be missing - handle gracefully with try/catch for each
+---
+

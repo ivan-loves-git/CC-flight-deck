@@ -85,7 +85,7 @@
         "npm run build passes"
       ],
       "priority": 5,
-      "passes": false,
+      "passes": true,
       "notes": "Cross-reference installed_plugins.json with settings.json to determine enabled status"
     },
     {
