@@ -8,6 +8,7 @@ import { PluginList } from '@/components/dashboard/PluginList';
 import { HookList } from '@/components/dashboard/HookList';
 import { SkillList } from '@/components/dashboard/SkillList';
 import { Button } from '@/components/ui/button';
+import { Separator } from '@/components/ui/separator';
 import type { ScanResponse } from '@/lib/types';
 import { formatDistanceToNow } from 'date-fns';
 
@@ -97,18 +98,32 @@ export default function Home() {
 
   return (
     <main className="min-h-screen p-8 bg-background">
-      <div className="max-w-7xl mx-auto space-y-8">
+      <div className="max-w-7xl mx-auto space-y-6">
         <Header searchQuery={searchQuery} onSearchChange={setSearchQuery} />
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <Separator className="my-6" />
+
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <CommandList commands={filteredData.commands} />
           <AgentList agents={filteredData.agents} />
+        </div>
+
+        <Separator className="my-6" />
+
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <PluginList plugins={filteredData.plugins} />
           <HookList hooks={filteredData.hooks} />
+        </div>
+
+        <Separator className="my-6" />
+
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <SkillList skills={filteredData.skills} />
         </div>
 
-        <div className="flex items-center justify-between pt-4 border-t">
+        <Separator className="my-6" />
+
+        <div className="flex items-center justify-between pt-2">
           <p className="text-sm text-muted-foreground">
             Last scanned: {formatDistanceToNow(new Date(data.scannedAt), { addSuffix: true })}
           </p>
