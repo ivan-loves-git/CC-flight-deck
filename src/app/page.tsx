@@ -15,6 +15,7 @@ export default function Home() {
   const [data, setData] = useState<ScanResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState('');
 
   const fetchData = async () => {
     setLoading(true);
@@ -66,17 +67,45 @@ export default function Home() {
     return null;
   }
 
+  // Filter data based on search query
+  const normalizedQuery = searchQuery.toLowerCase().trim();
+  const filteredData = {
+    commands: data.commands.filter(
+      (item) =>
+        item.name.toLowerCase().includes(normalizedQuery) ||
+        item.description.toLowerCase().includes(normalizedQuery)
+    ),
+    agents: data.agents.filter(
+      (item) =>
+        item.name.toLowerCase().includes(normalizedQuery) ||
+        item.description.toLowerCase().includes(normalizedQuery)
+    ),
+    plugins: data.plugins.filter(
+      (item) => item.name.toLowerCase().includes(normalizedQuery)
+    ),
+    hooks: data.hooks.filter(
+      (item) =>
+        item.name.toLowerCase().includes(normalizedQuery) ||
+        item.path.toLowerCase().includes(normalizedQuery)
+    ),
+    skills: data.skills.filter(
+      (item) =>
+        item.name.toLowerCase().includes(normalizedQuery) ||
+        item.description.toLowerCase().includes(normalizedQuery)
+    ),
+  };
+
   return (
     <main className="min-h-screen p-8 bg-background">
       <div className="max-w-7xl mx-auto space-y-8">
-        <Header />
+        <Header searchQuery={searchQuery} onSearchChange={setSearchQuery} />
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          <CommandList commands={data.commands} />
-          <AgentList agents={data.agents} />
-          <PluginList plugins={data.plugins} />
-          <HookList hooks={data.hooks} />
-          <SkillList skills={data.skills} />
+          <CommandList commands={filteredData.commands} />
+          <AgentList agents={filteredData.agents} />
+          <PluginList plugins={filteredData.plugins} />
+          <HookList hooks={filteredData.hooks} />
+          <SkillList skills={filteredData.skills} />
         </div>
 
         <div className="flex items-center justify-between pt-4 border-t">
