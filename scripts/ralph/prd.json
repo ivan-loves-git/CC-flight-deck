@@ -323,7 +323,7 @@
         "npm run build passes"
       ],
       "priority": 20,
-      "passes": false,
+      "passes": true,
       "notes": "Script should cd to project, run npm dev, wait, then open browser"
     }
   ]

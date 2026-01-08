@@ -330,3 +330,20 @@ Project: Claude Code Flight Deck
   - CommandList now shows blue "Global" badge when command.scope === 'global'
 ---
 
+## [2026-01-08] - US-020
+- Created launch script and updated documentation
+- Files changed:
+  - Created scripts/start.sh (executable launcher script)
+  - Updated README.md (added features list, setup instructions, how it works section)
+  - Updated scripts/ralph/prd.json (US-020 passes: true)
+- **Learnings:**
+  - Bash launcher scripts should use SCRIPT_DIR and PROJECT_DIR variables for portability
+  - curl -s http://localhost:3000 can poll for server readiness in a loop (up to 30 seconds)
+  - open command on macOS opens URL in default browser
+  - Background process with PID tracking: npm run dev & DEV_PID=$!, then wait $DEV_PID
+  - chmod +x is required for shell scripts to be executable
+  - README should include both one-command launch (./scripts/start.sh) and manual start (npm install && npm run dev)
+  - Document "How It Works" section helps users understand what the tool scans and where
+  - README tech stack list should reflect actual implementation (Tailwind v4, gray-matter, date-fns)
+---
+
