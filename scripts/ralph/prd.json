@@ -166,7 +166,7 @@
         "npm run build passes"
       ],
       "priority": 10,
-      "passes": false,
+      "passes": true,
       "notes": "Use date-fns for relative time formatting"
     },
     {
@@ -183,7 +183,7 @@
         "npm run build passes"
       ],
       "priority": 11,
-      "passes": false,
+      "passes": true,
       "notes": "Follow the visual design from PRD wireframe"
     },
     {

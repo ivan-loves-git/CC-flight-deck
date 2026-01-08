@@ -161,3 +161,33 @@ Project: Claude Code Flight Deck
   - Tailwind max-w-xl constraint keeps search bar at reasonable width
 ---
 
+## [2026-01-08] - US-010
+- Implemented ItemCard reusable component
+- Files changed:
+  - Created src/components/dashboard/ItemCard.tsx
+  - Added date-fns dependency to package.json
+  - Updated scripts/ralph/prd.json (US-010 passes: true)
+- **Learnings:**
+  - date-fns formatDistanceToNow() provides clean relative time formatting with addSuffix option
+  - ItemCard uses flex layout with optional icon prop for visual differentiation
+  - line-clamp-2 utility class limits description to 2 lines with ellipsis
+  - hover:bg-accent/50 provides subtle hover effect on cards
+  - CardHeader from shadcn/ui handles padding and spacing automatically
+  - Component accepts lastModified as Date object for type safety
+  - min-w-0 on flex items prevents text overflow issues
+---
+
+## [2026-01-08] - US-011
+- Implemented CommandList component
+- Files changed:
+  - Created src/components/dashboard/CommandList.tsx
+  - Updated scripts/ralph/prd.json (US-011 passes: true)
+- **Learnings:**
+  - List components follow pattern: section header with count, brief explanation, ScrollArea with fixed height
+  - Command names should display with "/" prefix for visual clarity
+  - lucide-react provides Terminal icon for command visualization
+  - ScrollArea accepts className for height constraint (h-[400px])
+  - space-y-2 creates consistent vertical spacing between ItemCards
+  - command.path used as key for React list rendering (each path is unique)
+---
+
