@@ -328,6 +328,7 @@ export default function Home() {
                 <h3 className="text-sm font-medium text-muted-foreground flex items-center gap-2">
                   <Terminal className="h-4 w-4" /> Commands
                 </h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 {favCommands.map((cmd) => (
                   <ItemCard
                     key={cmd.path}
@@ -340,6 +341,7 @@ export default function Home() {
                     onFavoriteChange={refreshFavorites}
                   />
                 ))}
+                </div>
               </div>
             )}
             {favAgents.length > 0 && (
@@ -347,6 +349,7 @@ export default function Home() {
                 <h3 className="text-sm font-medium text-muted-foreground flex items-center gap-2">
                   <Bot className="h-4 w-4" /> Agents
                 </h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 {favAgents.map((agent) => (
                   <ItemCard
                     key={agent.path}
@@ -358,6 +361,7 @@ export default function Home() {
                     onFavoriteChange={refreshFavorites}
                   />
                 ))}
+                </div>
               </div>
             )}
             {favSkills.length > 0 && (
@@ -365,6 +369,7 @@ export default function Home() {
                 <h3 className="text-sm font-medium text-muted-foreground flex items-center gap-2">
                   <Target className="h-4 w-4" /> Skills
                 </h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 {favSkills.map((skill) => (
                   <ItemCard
                     key={skill.path}
@@ -376,6 +381,7 @@ export default function Home() {
                     onFavoriteChange={refreshFavorites}
                   />
                 ))}
+                </div>
               </div>
             )}
           </div>
@@ -492,7 +498,7 @@ function CategorySection({
         </CollapsibleTrigger>
 
         <CollapsibleContent>
-          <div className="space-y-3">{children}</div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">{children}</div>
         </CollapsibleContent>
       </div>
     </Collapsible>
