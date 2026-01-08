@@ -1,9 +1,11 @@
 /**
- * Claude Code Flight Deck - Type Definitions
- *
- * Data models for commands, agents, plugins, hooks, skills, and scan responses.
+ * Data models for Claude Code Flight Deck
+ * Represents all customization types: Commands, Agents, Plugins, Hooks, and Skills
  */
 
+/**
+ * Command - A slash command (e.g., /commit)
+ */
 export interface Command {
   name: string;
   path: string;
@@ -13,6 +15,9 @@ export interface Command {
   projectName?: string;
 }
 
+/**
+ * Agent - A specialized AI worker
+ */
 export interface Agent {
   name: string;
   path: string;
@@ -20,6 +25,9 @@ export interface Agent {
   lastModified: Date;
 }
 
+/**
+ * Plugin - An installed plugin with enabled/disabled status
+ */
 export interface Plugin {
   name: string;
   version: string;
@@ -28,6 +36,9 @@ export interface Plugin {
   source: string;
 }
 
+/**
+ * Hook - An automation script that runs on triggers
+ */
 export interface Hook {
   name: string;
   path: string;
@@ -35,6 +46,9 @@ export interface Hook {
   lastModified: Date;
 }
 
+/**
+ * Skill - A complex multi-step capability
+ */
 export interface Skill {
   name: string;
   path: string;
@@ -42,6 +56,9 @@ export interface Skill {
   lastModified: Date;
 }
 
+/**
+ * ScanResponse - Complete scan result containing all customization types
+ */
 export interface ScanResponse {
   commands: Command[];
   agents: Agent[];
