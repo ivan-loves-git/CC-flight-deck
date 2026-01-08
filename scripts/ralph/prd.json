@@ -117,7 +117,7 @@
         "npm run build passes"
       ],
       "priority": 7,
-      "passes": false,
+      "passes": true,
       "notes": "Skills are folders, not files. Look for description in metadata files."
     },
     {

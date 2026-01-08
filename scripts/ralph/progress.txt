@@ -117,3 +117,18 @@ Project: Claude Code Flight Deck
   - Same error handling pattern as other scanners: try/catch, return empty array
 ---
 
+## [2026-01-08] - US-007
+- Implemented Skills scanner service
+- Files changed:
+  - Created src/lib/scanner/skills.ts
+  - Updated scripts/ralph/prd.json (US-007 passes: true)
+- **Learnings:**
+  - Skills are DIRECTORIES, not files (different from commands/agents/hooks)
+  - Skill metadata is in SKILL.md (uppercase) or README.md in each directory
+  - Use gray-matter to parse YAML frontmatter for description field
+  - Must filter for directories only: stats.isDirectory() === true
+  - Skill name = directory name, path = directory path
+  - Try both SKILL.md and README.md as fallback for description
+  - lastModified uses directory's mtime, not the SKILL.md file
+---
+
