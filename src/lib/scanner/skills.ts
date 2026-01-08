@@ -24,10 +24,19 @@ export async function scanSkills(): Promise<Skill[]> {
 
     for (const item of items) {
       const itemPath = path.join(skillsDir, item);
-      const stats = fs.statSync(itemPath);
 
-      // Skip files - we only want directories
-      if (!stats.isDirectory()) {
+      // Use lstatSync to not follow symlinks, and wrap in try/catch for broken symlinks
+      let stats;
+      try {
+        stats = fs.lstatSync(itemPath);
+      } catch (error) {
+        // Skip items we can't stat (broken symlinks, permission issues)
+        console.error(`Skipping ${item}: unable to stat`);
+        continue;
+      }
+
+      // Skip files and symlinks - we only want directories
+      if (!stats.isDirectory() || stats.isSymbolicLink()) {
         continue;
       }
 
