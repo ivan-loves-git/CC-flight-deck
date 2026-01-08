@@ -34,11 +34,14 @@ export function Header({
   };
 
   return (
-    <header className="border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="flex items-center justify-between px-6 py-4">
+    <header
+      className="border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60"
+      style={{ WebkitAppRegion: 'drag' } as React.CSSProperties}
+    >
+      <div className="flex items-center justify-between px-6 py-4 pl-20">
         {/* Title */}
         <div>
-          <h1 className="text-xl font-semibold">Claude Code Flight Deck</h1>
+          <h1 className="text-xl font-semibold">Claude FD</h1>
           {lastScanned && (
             <p className="text-xs text-muted-foreground mt-0.5">
               Last scanned: {lastScanned.toLocaleTimeString()}
@@ -47,7 +50,10 @@ export function Header({
         </div>
 
         {/* Search */}
-        <div className="flex-1 max-w-md mx-8">
+        <div
+          className="flex-1 max-w-md mx-8"
+          style={{ WebkitAppRegion: 'no-drag' } as React.CSSProperties}
+        >
           <Input
             type="search"
             placeholder="Search..."
@@ -58,7 +64,10 @@ export function Header({
         </div>
 
         {/* Actions */}
-        <div className="flex items-center gap-2">
+        <div
+          className="flex items-center gap-2"
+          style={{ WebkitAppRegion: 'no-drag' } as React.CSSProperties}
+        >
           {onRefresh && (
             <Button
               variant="outline"

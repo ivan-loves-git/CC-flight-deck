@@ -146,7 +146,7 @@ export function Sidebar({ activeCategory, onCategoryChange, counts }: SidebarPro
         <div className="p-4 border-t border-border">
           {!isCollapsed && (
             <p className="text-xs text-muted-foreground">
-              Claude Code Flight Deck
+              Claude FD
             </p>
           )}
         </div>
