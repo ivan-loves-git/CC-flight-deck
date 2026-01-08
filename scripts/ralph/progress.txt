@@ -235,3 +235,16 @@ Project: Claude Code Flight Deck
   - variant="outline" on Badge with custom bg-* colors creates filled badges with borders
 ---
 
+## [2026-01-08] - US-015
+- Implemented SkillList component
+- Files changed:
+  - Created src/components/dashboard/SkillList.tsx
+  - Updated scripts/ralph/prd.json (US-015 passes: true)
+- **Learnings:**
+  - SkillList follows same pattern as AgentList and CommandList (header with count, explanation, ScrollArea)
+  - lucide-react Target icon represents skills ("Complex multi-step capabilities")
+  - Skill interface identical to Agent interface (name, path, description, lastModified)
+  - Component structure consistent across all list components for maintainability
+  - Target icon visually differentiates skills from other entity types
+---
+
