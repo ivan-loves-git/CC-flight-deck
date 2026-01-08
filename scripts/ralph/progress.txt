@@ -191,3 +191,16 @@ Project: Claude Code Flight Deck
   - command.path used as key for React list rendering (each path is unique)
 ---
 
+## [2026-01-08] - US-012
+- Implemented AgentList component
+- Files changed:
+  - Created src/components/dashboard/AgentList.tsx
+  - Updated scripts/ralph/prd.json (US-012 passes: true)
+- **Learnings:**
+  - AgentList follows same pattern as CommandList (header with count, explanation, ScrollArea)
+  - lucide-react Bot icon represents agents ("Specialized AI workers")
+  - Agent names display without prefix (unlike commands which use "/")
+  - Component structure identical to CommandList: props interface, section header, ScrollArea with ItemCards
+  - Agent interface has same fields as Command except for scope/projectName fields
+---
+
