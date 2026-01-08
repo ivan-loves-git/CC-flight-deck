@@ -17,7 +17,7 @@
         "Visiting localhost:3000 shows a page"
       ],
       "priority": 1,
-      "passes": false,
+      "passes": true,
       "notes": "Use 'npx create-next-app@latest' then 'npx shadcn@latest init'. Install Card, Badge, Button, Input, ScrollArea components."
     },
     {
