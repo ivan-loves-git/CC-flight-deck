@@ -248,3 +248,20 @@ Project: Claude Code Flight Deck
   - Target icon visually differentiates skills from other entity types
 ---
 
+## [2026-01-08] - US-016
+- Assembled main dashboard page with data fetching and all components
+- Files changed:
+  - Updated src/app/page.tsx (client component with React hooks)
+  - Updated scripts/ralph/prd.json (US-016 passes: true)
+- **Learnings:**
+  - 'use client' directive needed for useState, useEffect, and interactive components
+  - useState<ScanResponse | null>(null) handles loading state properly
+  - useEffect with empty dependency array [] runs once on mount for initial fetch
+  - fetchData() function reusable for both initial load and Refresh button
+  - Three render states: loading, error, and success with data display
+  - Grid layout (grid-cols-1 lg:grid-cols-2) creates responsive 2-column layout on large screens
+  - formatDistanceToNow from date-fns displays "Last scanned: X minutes ago"
+  - Button disabled={loading} prevents double-clicking during refresh
+  - border-t with pt-4 creates clean separation for footer with timestamp and refresh button
+---
+

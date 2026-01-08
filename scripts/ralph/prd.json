@@ -260,7 +260,7 @@
         "npm run build passes"
       ],
       "priority": 16,
-      "passes": false,
+      "passes": true,
       "notes": "Use React hooks for data fetching and state"
     },
     {
