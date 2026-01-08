@@ -132,3 +132,18 @@ Project: Claude Code Flight Deck
   - lastModified uses directory's mtime, not the SKILL.md file
 ---
 
+## [2026-01-08] - US-008
+- Implemented main scanner index and API route
+- Files changed:
+  - Created src/lib/scanner/index.ts
+  - Created src/app/api/scan/route.ts
+  - Updated scripts/ralph/prd.json (US-008 passes: true)
+- **Learnings:**
+  - scanAll() uses Promise.all() to run all 5 scanners in parallel for efficiency
+  - API route follows Next.js App Router format: export async function GET()
+  - NextResponse.json() is the standard way to return JSON from API routes
+  - API routes should include try/catch with proper error responses (500 status)
+  - The /api/scan endpoint is marked as Dynamic (ƒ) in build output, not Static (○)
+  - Path alias @/lib/scanner works correctly for imports in API routes
+---
+
