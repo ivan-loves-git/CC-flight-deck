@@ -34,6 +34,7 @@ export interface Plugin {
   enabled: boolean;
   installedAt: Date;
   source: string;
+  path: string;
 }
 
 /**

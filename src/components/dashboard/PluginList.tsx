@@ -1,9 +1,11 @@
 import { Plugin } from "@/lib/types";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardDescription } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Puzzle, Check, X } from "lucide-react";
+import { Puzzle, Check, X, ExternalLink } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
+import { useState } from "react";
 
 interface PluginListProps {
   plugins: Plugin[];
@@ -12,6 +14,26 @@ interface PluginListProps {
 export function PluginList({ plugins }: PluginListProps) {
   const enabledCount = plugins.filter((p) => p.enabled).length;
   const totalCount = plugins.length;
+  const [openingPlugin, setOpeningPlugin] = useState<string | null>(null);
+
+  const handleOpen = async (path: string, pluginName: string) => {
+    setOpeningPlugin(pluginName);
+    try {
+      const response = await fetch('/api/open', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ path }),
+      });
+
+      if (!response.ok) {
+        console.error('Failed to open plugin in VS Code');
+      }
+    } catch (error) {
+      console.error('Error opening plugin:', error);
+    } finally {
+      setOpeningPlugin(null);
+    }
+  };
 
   return (
     <div className="space-y-4">
@@ -69,6 +91,15 @@ export function PluginList({ plugins }: PluginListProps) {
                       })}
                     </CardDescription>
                   </div>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => handleOpen(plugin.path, plugin.name)}
+                    disabled={openingPlugin === plugin.name}
+                    className="shrink-0"
+                  >
+                    <ExternalLink className="h-4 w-4" />
+                  </Button>
                 </div>
               </CardHeader>
             </Card>

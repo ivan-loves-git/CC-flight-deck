@@ -27,6 +27,7 @@ export function CommandList({ commands }: CommandListProps) {
               description={command.description}
               lastModified={command.lastModified}
               icon={<Terminal size={20} />}
+              path={command.path}
             />
           ))}
         </div>

@@ -29,6 +29,7 @@ export function SkillList({ skills }: SkillListProps) {
               name={skill.name}
               description={skill.description}
               lastModified={skill.lastModified}
+              path={skill.path}
             />
           ))}
         </div>

@@ -64,6 +64,7 @@ export function scanPlugins(): Plugin[] {
         enabled: enabledPlugins[pluginKey] ?? false,
         installedAt: new Date(installation.installedAt),
         source: pluginKey.split('@')[1] || 'unknown',
+        path: installation.installPath,
       });
     }
 

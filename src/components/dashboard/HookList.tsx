@@ -32,6 +32,7 @@ export function HookList({ hooks }: HookListProps) {
                   description={`Path: ${hook.path}`}
                   lastModified={hook.lastModified}
                   icon={<Zap className="w-5 h-5" />}
+                  path={hook.path}
                 />
               </div>
               <Badge

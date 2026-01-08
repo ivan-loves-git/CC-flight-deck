@@ -27,6 +27,7 @@ export function AgentList({ agents }: AgentListProps) {
               description={agent.description}
               lastModified={agent.lastModified}
               icon={<Bot size={20} />}
+              path={agent.path}
             />
           ))}
         </div>
