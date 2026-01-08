@@ -213,7 +213,7 @@
         "npm run build passes"
       ],
       "priority": 13,
-      "passes": false,
+      "passes": true,
       "notes": "Count format like '7/8 on' in header"
     },
     {
@@ -228,7 +228,7 @@
         "npm run build passes"
       ],
       "priority": 14,
-      "passes": false,
+      "passes": true,
       "notes": "Hooks are automations that run on triggers"
     },
     {

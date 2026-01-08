@@ -204,3 +204,34 @@ Project: Claude Code Flight Deck
   - Agent interface has same fields as Command except for scope/projectName fields
 ---
 
+## [2026-01-08] - US-013
+- Implemented PluginList component with status badges
+- Files changed:
+  - Created src/components/dashboard/PluginList.tsx
+  - Updated scripts/ralph/prd.json (US-013 passes: true)
+- **Learnings:**
+  - PluginList uses different structure than Command/Agent lists - builds Card manually instead of using ItemCard
+  - Badge component accepts custom className for color overrides (bg-green-600 for enabled, bg-gray-500 for disabled)
+  - Header shows enabled/total count format: "{enabledCount}/{totalCount} on"
+  - lucide-react Check and X icons used inside badges for visual status indicators
+  - Plugin.enabled boolean filters plugins for count calculation
+  - Plugin data includes version, source, and installedAt fields for display
+  - formatDistanceToNow from date-fns formats installedAt timestamp
+  - Puzzle icon from lucide-react represents plugins visually
+---
+
+## [2026-01-08] - US-014
+- Implemented HookList component
+- Files changed:
+  - Created src/components/dashboard/HookList.tsx
+  - Updated scripts/ralph/prd.json (US-014 passes: true)
+- **Learnings:**
+  - HookList uses hybrid structure: ItemCard for main content + Badge for type indicator
+  - flex layout with gap-2 allows ItemCard and Badge to sit side-by-side
+  - Badge colors: blue for shell scripts, green for node scripts, gray for other types
+  - lucide-react Zap (lightning) icon represents hooks visually
+  - Hook descriptions show path instead of full description (since hooks are scripts)
+  - Hook type badge displayed outside of ItemCard for better visual hierarchy
+  - variant="outline" on Badge with custom bg-* colors creates filled badges with borders
+---
+
