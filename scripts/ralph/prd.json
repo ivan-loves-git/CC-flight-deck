@@ -52,7 +52,7 @@
         "npm run build passes"
       ],
       "priority": 3,
-      "passes": false,
+      "passes": true,
       "notes": "Use gray-matter package for YAML frontmatter parsing. Use fs and path from Node.js."
     },
     {
@@ -68,7 +68,7 @@
         "npm run build passes"
       ],
       "priority": 4,
-      "passes": false,
+      "passes": true,
       "notes": "Similar pattern to commands scanner but extracts first paragraph instead of frontmatter"
     },
     {

@@ -59,3 +59,31 @@ Project: Claude Code Flight Deck
   - Plugin interface tracks enabled status, version, and install timestamp
   - ScanResponse aggregates all entity types with a timestamp
 ---
+
+## [2026-01-08] - US-003
+- Implemented Commands scanner service
+- Files changed:
+  - Created src/lib/scanner/commands.ts
+  - Added gray-matter dependency to package.json
+  - Updated prd.json (US-003 passes: true)
+- **Learnings:**
+  - gray-matter package easily parses YAML frontmatter from markdown files
+  - Scanner pattern: read directory, filter by extension, parse files, return typed array
+  - All commands in ~/.claude/commands/ are global scope
+  - fs.statSync().mtime provides lastModified timestamp
+  - Scanner should handle missing directory gracefully (return empty array)
+  - Command files use YAML frontmatter with 'description' field
+---
+## [2026-01-08] - US-004
+- Implemented Agents scanner service
+- Files changed:
+  - Created src/lib/scanner/agents.ts
+  - Updated prd.json (US-004 passes: true)
+- **Learnings:**
+  - Agent descriptions come from first paragraph, not YAML frontmatter
+  - extractFirstParagraph() helper function handles frontmatter removal
+  - Strip markdown formatting (headers, bold, italic, code) for cleaner descriptions
+  - Same error handling pattern: try/catch and return empty array on failure
+  - Agent files in ~/.claude/agents/ follow same .md file pattern as commands
+---
+
