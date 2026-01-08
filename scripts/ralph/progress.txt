@@ -265,3 +265,45 @@ Project: Claude Code Flight Deck
   - border-t with pt-4 creates clean separation for footer with timestamp and refresh button
 ---
 
+## [2026-01-08] - US-017
+- Implemented "Open in VS Code" action for all items
+- Files changed:
+  - Created src/app/api/open/route.ts (POST endpoint using child_process.exec)
+  - Updated src/components/dashboard/ItemCard.tsx (added Open button with ExternalLink icon)
+  - Updated src/components/dashboard/CommandList.tsx (pass path to ItemCard)
+  - Updated src/components/dashboard/AgentList.tsx (pass path to ItemCard)
+  - Updated src/components/dashboard/HookList.tsx (pass path to ItemCard)
+  - Updated src/components/dashboard/SkillList.tsx (pass path to ItemCard)
+  - Updated src/components/dashboard/PluginList.tsx (custom Open button implementation)
+  - Updated src/lib/types.ts (added path field to Plugin interface)
+  - Updated src/lib/scanner/plugins.ts (include installation.installPath as path)
+  - Updated scripts/ralph/prd.json (US-017 passes: true)
+- **Learnings:**
+  - API route uses promisify() for child_process.exec to make it async/await compatible
+  - ItemCard needs path prop added to interface for Open button functionality
+  - PluginList doesn't use ItemCard, so needed custom Open button implementation
+  - Plugin interface initially lacked path field, added using installation.installPath from scanner data
+  - Button disabled state (isOpening) prevents multiple clicks during API call
+  - ExternalLink icon from lucide-react provides clear visual indicator for "open externally"
+  - shrink-0 class prevents button from shrinking in flex layouts
+  - All list components must pass path prop to ItemCard after interface update
+---
+
+## [2026-01-08] - US-018
+- Implemented search functionality with client-side filtering
+- Files changed:
+  - Updated src/components/dashboard/Header.tsx (added searchQuery and onSearchChange props)
+  - Updated src/app/page.tsx (added search state, filtering logic, and wired up Header)
+  - Updated scripts/ralph/prd.json (US-018 passes: true)
+- **Learnings:**
+  - Search filtering is case-insensitive using toLowerCase() and trim() for normalized comparison
+  - filteredData object matches ScanResponse structure for clean type safety
+  - Filtered counts automatically update in section headers since list components receive filtered arrays
+  - Empty search (normalized to empty string) shows all items due to includes('') returning true
+  - Search matches against name AND description for most types (commands, agents, skills)
+  - Plugins only search by name (no description field in data)
+  - Hooks search by name AND path (path useful for finding specific hook files)
+  - useState + controlled input pattern: value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)}
+  - Filtering happens in parent component before passing data to children (single source of truth)
+---
+
