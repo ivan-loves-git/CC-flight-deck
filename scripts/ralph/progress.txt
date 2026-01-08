@@ -147,3 +147,17 @@ Project: Claude Code Flight Deck
   - Path alias @/lib/scanner works correctly for imports in API routes
 ---
 
+## [2026-01-08] - US-009
+- Implemented Dashboard Header component
+- Files changed:
+  - Created src/components/dashboard/ directory
+  - Created src/components/dashboard/Header.tsx
+  - Updated scripts/ralph/prd.json (US-009 passes: true)
+- **Learnings:**
+  - Dashboard components go in src/components/dashboard/ subdirectory
+  - shadcn/ui Input component accepts standard HTML input props
+  - Input type="search" provides better semantics for search functionality
+  - Header component is stateless for now, search wiring happens in US-018
+  - Tailwind max-w-xl constraint keeps search bar at reasonable width
+---
+
