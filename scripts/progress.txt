@@ -1,0 +1,31 @@
+# Ralph Progress Log
+Started: 2026-01-08
+Project: Claude Code Flight Deck
+
+## Codebase Patterns
+<!-- Patterns discovered during development -->
+- Next.js 14 App Router: use src/app/ structure
+- shadcn/ui: components go in src/components/ui/
+- Scanner services: each in src/lib/scanner/[type].ts
+- All scanners read from ~/.claude/ directory
+- Use gray-matter for YAML frontmatter parsing
+- Use date-fns for relative time formatting
+
+## Key Files
+- ~/.claude/commands/ - Global slash commands (*.md)
+- ~/.claude/agents/ - Custom agents (*.md)
+- ~/.claude/plugins/installed_plugins.json - Plugin list
+- ~/.claude/settings.json - Enabled plugins
+- ~/.claude/hooks/ - Automation scripts
+- ~/.claude/skills/ - Complex skills (folders)
+
+## Tech Stack
+- Next.js 14+ with App Router
+- TypeScript
+- Tailwind CSS
+- shadcn/ui components
+- Node.js fs for file scanning
+
+---
+
+<!-- Ralph appends story logs below this line -->

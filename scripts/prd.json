@@ -1,0 +1,330 @@
+{
+  "projectName": "Claude Code Flight Deck",
+  "branchName": "ralph/flight-deck-mvp",
+  "description": "A visual command center dashboard for Claude Code customizations - shows commands, agents, plugins, hooks, and skills at a glance",
+  "userStories": [
+    {
+      "id": "US-001",
+      "title": "Project scaffolding with Next.js and shadcn/ui",
+      "description": "Initialize the Next.js 14 project with TypeScript, Tailwind CSS, and shadcn/ui component library",
+      "acceptanceCriteria": [
+        "package.json exists with next, react, typescript dependencies",
+        "tailwind.config.ts configured",
+        "components.json exists (shadcn/ui initialized)",
+        "src/app/layout.tsx and src/app/page.tsx exist",
+        "src/components/ui/ directory exists with at least Card component",
+        "npm run dev starts without errors",
+        "Visiting localhost:3000 shows a page"
+      ],
+      "priority": 1,
+      "passes": false,
+      "notes": "Use 'npx create-next-app@latest' then 'npx shadcn@latest init'. Install Card, Badge, Button, Input, ScrollArea components."
+    },
+    {
+      "id": "US-002",
+      "title": "Define TypeScript interfaces for all data models",
+      "description": "Create type definitions for Command, Agent, Plugin, Hook, Skill, and ScanResponse",
+      "acceptanceCriteria": [
+        "src/lib/types.ts exists",
+        "Command interface has: name, path, description, lastModified, scope, projectName?",
+        "Agent interface has: name, path, description, lastModified",
+        "Plugin interface has: name, version, enabled, installedAt, source",
+        "Hook interface has: name, path, type, lastModified",
+        "Skill interface has: name, path, description, lastModified",
+        "ScanResponse interface combines all with scannedAt timestamp",
+        "npm run build passes (no type errors)"
+      ],
+      "priority": 2,
+      "passes": false,
+      "notes": "These interfaces mirror the PRD data model section exactly"
+    },
+    {
+      "id": "US-003",
+      "title": "Commands scanner service",
+      "description": "Create a scanner that reads ~/.claude/commands/ and extracts command info including YAML frontmatter",
+      "acceptanceCriteria": [
+        "src/lib/scanner/commands.ts exists",
+        "scanCommands() function exported",
+        "Reads all .md files from ~/.claude/commands/",
+        "Parses YAML frontmatter to extract description",
+        "Returns array of Command objects",
+        "Handles missing description gracefully (uses 'No description')",
+        "npm run build passes"
+      ],
+      "priority": 3,
+      "passes": false,
+      "notes": "Use gray-matter package for YAML frontmatter parsing. Use fs and path from Node.js."
+    },
+    {
+      "id": "US-004",
+      "title": "Agents scanner service",
+      "description": "Create a scanner that reads ~/.claude/agents/ and extracts agent info",
+      "acceptanceCriteria": [
+        "src/lib/scanner/agents.ts exists",
+        "scanAgents() function exported",
+        "Reads all .md files from ~/.claude/agents/",
+        "Extracts first paragraph as description",
+        "Returns array of Agent objects",
+        "npm run build passes"
+      ],
+      "priority": 4,
+      "passes": false,
+      "notes": "Similar pattern to commands scanner but extracts first paragraph instead of frontmatter"
+    },
+    {
+      "id": "US-005",
+      "title": "Plugins scanner service",
+      "description": "Create a scanner that reads plugin data from ~/.claude/plugins/ and settings.json",
+      "acceptanceCriteria": [
+        "src/lib/scanner/plugins.ts exists",
+        "scanPlugins() function exported",
+        "Reads ~/.claude/plugins/installed_plugins.json",
+        "Reads ~/.claude/settings.json for enabled status",
+        "Returns array of Plugin objects with correct enabled boolean",
+        "Handles missing files gracefully (returns empty array)",
+        "npm run build passes"
+      ],
+      "priority": 5,
+      "passes": false,
+      "notes": "Cross-reference installed_plugins.json with settings.json to determine enabled status"
+    },
+    {
+      "id": "US-006",
+      "title": "Hooks scanner service",
+      "description": "Create a scanner that reads ~/.claude/hooks/ directory",
+      "acceptanceCriteria": [
+        "src/lib/scanner/hooks.ts exists",
+        "scanHooks() function exported",
+        "Reads all files from ~/.claude/hooks/",
+        "Determines type (shell/node/other) from file extension",
+        "Returns array of Hook objects",
+        "npm run build passes"
+      ],
+      "priority": 6,
+      "passes": false,
+      "notes": ".sh files are shell, .js/.ts are node, others are 'other'"
+    },
+    {
+      "id": "US-007",
+      "title": "Skills scanner service",
+      "description": "Create a scanner that reads ~/.claude/skills/ directory",
+      "acceptanceCriteria": [
+        "src/lib/scanner/skills.ts exists",
+        "scanSkills() function exported",
+        "Reads skill directories from ~/.claude/skills/",
+        "Extracts description from skill.md or README.md if present",
+        "Returns array of Skill objects",
+        "npm run build passes"
+      ],
+      "priority": 7,
+      "passes": false,
+      "notes": "Skills are folders, not files. Look for description in metadata files."
+    },
+    {
+      "id": "US-008",
+      "title": "Main scanner index and API route",
+      "description": "Create index that combines all scanners and API route to expose scan results",
+      "acceptanceCriteria": [
+        "src/lib/scanner/index.ts exports scanAll() function",
+        "scanAll() calls all 5 scanners and returns ScanResponse",
+        "src/app/api/scan/route.ts exists",
+        "GET /api/scan returns JSON with all scan results",
+        "Response includes scannedAt timestamp",
+        "npm run build passes"
+      ],
+      "priority": 8,
+      "passes": false,
+      "notes": "API route uses Next.js App Router format"
+    },
+    {
+      "id": "US-009",
+      "title": "Dashboard header component",
+      "description": "Create the dashboard header with title and search bar",
+      "acceptanceCriteria": [
+        "src/components/dashboard/Header.tsx exists",
+        "Shows 'Claude Code Flight Deck' title",
+        "Contains search Input from shadcn/ui",
+        "Search input has placeholder text",
+        "Uses Tailwind for styling",
+        "npm run build passes"
+      ],
+      "priority": 9,
+      "passes": false,
+      "notes": "Search functionality will be wired up later"
+    },
+    {
+      "id": "US-010",
+      "title": "ItemCard reusable component",
+      "description": "Create a reusable card component for displaying any item type",
+      "acceptanceCriteria": [
+        "src/components/dashboard/ItemCard.tsx exists",
+        "Uses shadcn/ui Card, CardHeader, CardDescription",
+        "Shows item name prominently",
+        "Shows description below name",
+        "Shows last modified as relative time (e.g., '2d ago')",
+        "Accepts icon prop for visual differentiation",
+        "npm run build passes"
+      ],
+      "priority": 10,
+      "passes": false,
+      "notes": "Use date-fns for relative time formatting"
+    },
+    {
+      "id": "US-011",
+      "title": "CommandList component",
+      "description": "Create component that displays list of commands",
+      "acceptanceCriteria": [
+        "src/components/dashboard/CommandList.tsx exists",
+        "Shows section header 'COMMANDS' with count",
+        "Shows brief explanation: 'Your slash commands'",
+        "Renders ItemCard for each command",
+        "Command names show with / prefix",
+        "Uses ScrollArea for overflow",
+        "npm run build passes"
+      ],
+      "priority": 11,
+      "passes": false,
+      "notes": "Follow the visual design from PRD wireframe"
+    },
+    {
+      "id": "US-012",
+      "title": "AgentList component",
+      "description": "Create component that displays list of agents",
+      "acceptanceCriteria": [
+        "src/components/dashboard/AgentList.tsx exists",
+        "Shows section header 'AGENTS' with count",
+        "Shows explanation: 'Specialized AI workers'",
+        "Renders ItemCard for each agent with robot icon",
+        "npm run build passes"
+      ],
+      "priority": 12,
+      "passes": false,
+      "notes": "Use appropriate icon (robot emoji or Lucide icon)"
+    },
+    {
+      "id": "US-013",
+      "title": "PluginList component with status badges",
+      "description": "Create component that displays plugins with enabled/disabled status",
+      "acceptanceCriteria": [
+        "src/components/dashboard/PluginList.tsx exists",
+        "Shows section header 'PLUGINS' with enabled/total count",
+        "Uses Badge component for enabled (green) / disabled (gray) status",
+        "Shows checkmark or X icon based on status",
+        "npm run build passes"
+      ],
+      "priority": 13,
+      "passes": false,
+      "notes": "Count format like '7/8 on' in header"
+    },
+    {
+      "id": "US-014",
+      "title": "HookList component",
+      "description": "Create component that displays hooks",
+      "acceptanceCriteria": [
+        "src/components/dashboard/HookList.tsx exists",
+        "Shows section header 'HOOKS' with count",
+        "Shows hook type (shell/node) as badge",
+        "Uses lightning icon for hooks",
+        "npm run build passes"
+      ],
+      "priority": 14,
+      "passes": false,
+      "notes": "Hooks are automations that run on triggers"
+    },
+    {
+      "id": "US-015",
+      "title": "SkillList component",
+      "description": "Create component that displays skills",
+      "acceptanceCriteria": [
+        "src/components/dashboard/SkillList.tsx exists",
+        "Shows section header 'SKILLS' with count",
+        "Shows explanation: 'Complex multi-step capabilities'",
+        "Uses target icon for skills",
+        "npm run build passes"
+      ],
+      "priority": 15,
+      "passes": false,
+      "notes": "Skills are complex capabilities"
+    },
+    {
+      "id": "US-016",
+      "title": "Assemble main dashboard page",
+      "description": "Wire up all components into the main page with data fetching",
+      "acceptanceCriteria": [
+        "src/app/page.tsx fetches from /api/scan on load",
+        "Renders Header component",
+        "Renders all 5 list components with real data",
+        "Shows 'Last scanned' timestamp at bottom",
+        "Has Refresh button that re-fetches data",
+        "Page is visually organized per PRD wireframe",
+        "npm run build passes"
+      ],
+      "priority": 16,
+      "passes": false,
+      "notes": "Use React hooks for data fetching and state"
+    },
+    {
+      "id": "US-017",
+      "title": "Open in VS Code action",
+      "description": "Add button to open any item's file in VS Code",
+      "acceptanceCriteria": [
+        "ItemCard has 'Open' button",
+        "Clicking button opens file path in VS Code",
+        "Uses 'code' CLI command via API route",
+        "src/app/api/open/route.ts handles the action",
+        "Works for all item types",
+        "npm run build passes"
+      ],
+      "priority": 17,
+      "passes": false,
+      "notes": "Use child_process.exec to run 'code <path>'"
+    },
+    {
+      "id": "US-018",
+      "title": "Search functionality",
+      "description": "Wire up search to filter items across all categories",
+      "acceptanceCriteria": [
+        "Typing in search bar filters displayed items",
+        "Search matches against name and description",
+        "Search is case-insensitive",
+        "Empty search shows all items",
+        "Filtered counts update in section headers",
+        "npm run build passes"
+      ],
+      "priority": 18,
+      "passes": false,
+      "notes": "Client-side filtering, no API call needed"
+    },
+    {
+      "id": "US-019",
+      "title": "Polish visual design",
+      "description": "Apply final styling to match PRD wireframe aesthetic",
+      "acceptanceCriteria": [
+        "Consistent spacing between sections",
+        "Section dividers using Separator component",
+        "Color coding for badges (green enabled, gray disabled, blue global)",
+        "Hover states on cards",
+        "Dark mode support via Tailwind",
+        "npm run build passes"
+      ],
+      "priority": 19,
+      "passes": false,
+      "notes": "Reference the PRD wireframe for exact visual targets"
+    },
+    {
+      "id": "US-020",
+      "title": "Launch script and documentation",
+      "description": "Create one-command launcher and update README",
+      "acceptanceCriteria": [
+        "scripts/start.sh exists and is executable",
+        "Running ./scripts/start.sh launches dev server and opens browser",
+        "README.md explains what the project does",
+        "README.md includes setup and usage instructions",
+        "npm run build passes"
+      ],
+      "priority": 20,
+      "passes": false,
+      "notes": "Script should cd to project, run npm dev, wait, then open browser"
+    }
+  ]
+}
