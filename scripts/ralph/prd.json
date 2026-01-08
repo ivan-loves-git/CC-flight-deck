@@ -101,7 +101,7 @@
         "npm run build passes"
       ],
       "priority": 6,
-      "passes": false,
+      "passes": true,
       "notes": ".sh files are shell, .js/.ts are node, others are 'other'"
     },
     {
