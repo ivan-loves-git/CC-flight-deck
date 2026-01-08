@@ -103,3 +103,17 @@ Project: Claude Code Flight Deck
   - Both files may be missing - handle gracefully with try/catch for each
 ---
 
+## [2026-01-08] - US-006
+- Implemented Hooks scanner service
+- Files changed:
+  - Created src/lib/scanner/hooks.ts
+  - Updated scripts/ralph/prd.json (US-006 passes: true)
+- **Learnings:**
+  - Hook files can be any extension (not just .md like commands/agents)
+  - Type detection pattern: .sh → shell, .js/.ts → node, other → other
+  - Must skip directories with stats.isDirectory() check
+  - path.extname() includes the dot (e.g., '.sh'), need toLowerCase() for consistency
+  - Extract name without extension: path.basename(file, ext)
+  - Same error handling pattern as other scanners: try/catch, return empty array
+---
+
