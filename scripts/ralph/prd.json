@@ -308,7 +308,7 @@
         "npm run build passes"
       ],
       "priority": 19,
-      "passes": false,
+      "passes": true,
       "notes": "Reference the PRD wireframe for exact visual targets"
     },
     {

@@ -307,3 +307,26 @@ Project: Claude Code Flight Deck
   - Filtering happens in parent component before passing data to children (single source of truth)
 ---
 
+## [2026-01-08] - US-019
+- Polished visual design with separators, spacing, and dark mode
+- Files changed:
+  - Updated src/app/page.tsx (added Separator imports and components, improved spacing)
+  - Updated src/components/dashboard/CommandList.tsx (added blue "Global" badge for global commands)
+  - Created src/components/theme-provider.tsx (ThemeProvider wrapper for next-themes)
+  - Updated src/app/layout.tsx (integrated ThemeProvider with system theme detection)
+  - Installed shadcn/ui Separator component (src/components/ui/separator.tsx)
+  - Installed next-themes package for dark mode
+  - Updated scripts/ralph/prd.json (US-019 passes: true)
+- **Learnings:**
+  - shadcn/ui Separator component creates clean visual dividers between sections
+  - Consistent spacing improves visual hierarchy (space-y-6, gap-6 throughout)
+  - Badge color patterns: green=enabled, gray=disabled, blue=global/shell, green=node
+  - ItemCard and PluginList already had hover:bg-accent/50 transition-colors for hover states
+  - next-themes provides system theme detection with ThemeProvider
+  - suppressHydrationWarning on <html> prevents hydration mismatch with theme class
+  - ThemeProvider must wrap children in layout.tsx with attribute="class" for Tailwind dark mode
+  - defaultTheme="system" respects user's OS preference automatically
+  - Badge with variant="outline" + custom className allows color overrides (bg-*, text-*, border-*)
+  - CommandList now shows blue "Global" badge when command.scope === 'global'
+---
+
