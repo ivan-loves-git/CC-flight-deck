@@ -10,6 +10,7 @@ import {
   Star,
   ChevronLeft,
   ChevronRight,
+  TableProperties,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -21,7 +22,7 @@ import {
 } from '@/components/ui/tooltip';
 import { cn } from '@/lib/utils';
 
-export type CategoryType = 'commands' | 'agents' | 'plugins' | 'hooks' | 'skills' | 'favorites';
+export type CategoryType = 'commands' | 'agents' | 'plugins' | 'hooks' | 'skills' | 'favorites' | 'all';
 
 interface SidebarProps {
   activeCategory: CategoryType;
@@ -33,10 +34,12 @@ interface SidebarProps {
     hooks: number;
     skills: number;
     favorites: number;
+    all: number;
   };
 }
 
 const categories: { id: CategoryType; label: string; icon: typeof Terminal }[] = [
+  { id: 'all', label: 'All Items', icon: TableProperties },
   { id: 'commands', label: 'Commands', icon: Terminal },
   { id: 'agents', label: 'Agents', icon: Bot },
   { id: 'plugins', label: 'Plugins', icon: Puzzle },

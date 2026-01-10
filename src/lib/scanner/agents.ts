@@ -2,49 +2,77 @@ import fs from 'fs';
 import path from 'path';
 import os from 'os';
 import type { Agent } from '@/lib/types';
+import { getEnabledPluginPaths } from './plugins';
 
 /**
- * Scans ~/.claude/agents/ directory for agent files
- * Extracts first paragraph as description
- * Returns array of Agent objects
+ * Scans a directory for agent files (*.md), including subdirectories
  */
-export async function scanAgents(): Promise<Agent[]> {
-  const agentsDir = path.join(os.homedir(), '.claude', 'agents');
-
-  // Check if directory exists
-  if (!fs.existsSync(agentsDir)) {
+function scanAgentsInDir(
+  dir: string,
+  scope: 'global' | 'plugin',
+  pluginName?: string,
+  category?: string
+): Agent[] {
+  if (!fs.existsSync(dir)) {
     return [];
   }
 
   const agents: Agent[] = [];
+  const entries = fs.readdirSync(dir, { withFileTypes: true });
 
-  try {
-    const files = fs.readdirSync(agentsDir);
+  for (const entry of entries) {
+    const entryPath = path.join(dir, entry.name);
 
-    for (const file of files) {
-      // Only process .md files
-      if (!file.endsWith('.md')) {
-        continue;
-      }
-
-      const filePath = path.join(agentsDir, file);
-      const stats = fs.statSync(filePath);
-
-      // Read file content
-      const fileContent = fs.readFileSync(filePath, 'utf-8');
-
-      // Extract command name (filename without .md extension)
-      const name = path.basename(file, '.md');
-
-      // Extract first paragraph as description
+    if (entry.isDirectory()) {
+      // Recursively scan subdirectories (for plugin agents organized by category)
+      agents.push(...scanAgentsInDir(entryPath, scope, pluginName, entry.name));
+    } else if (entry.isFile() && entry.name.endsWith('.md')) {
+      const stats = fs.statSync(entryPath);
+      const fileContent = fs.readFileSync(entryPath, 'utf-8');
+      const baseName = path.basename(entry.name, '.md');
       const description = extractFirstParagraph(fileContent);
 
+      // For plugin agents, prefix with plugin name and optionally category
+      let displayName = baseName;
+      if (pluginName) {
+        displayName = category
+          ? `${pluginName}:${category}:${baseName}`
+          : `${pluginName}:${baseName}`;
+      }
+
       agents.push({
-        name,
-        path: filePath,
+        name: displayName,
+        path: entryPath,
         description,
         lastModified: stats.mtime,
+        scope,
+        pluginName,
+        category,
       });
+    }
+  }
+
+  return agents;
+}
+
+/**
+ * Scans ~/.claude/agents/ and plugin agents directories
+ * Extracts first paragraph as description
+ * Returns array of Agent objects
+ */
+export async function scanAgents(): Promise<Agent[]> {
+  const agents: Agent[] = [];
+
+  try {
+    // Scan global agents
+    const globalAgentsDir = path.join(os.homedir(), '.claude', 'agents');
+    agents.push(...scanAgentsInDir(globalAgentsDir, 'global'));
+
+    // Scan plugin agents
+    const enabledPlugins = getEnabledPluginPaths();
+    for (const plugin of enabledPlugins) {
+      const pluginAgentsDir = path.join(plugin.installPath, 'agents');
+      agents.push(...scanAgentsInDir(pluginAgentsDir, 'plugin', plugin.name));
     }
   } catch (error) {
     console.error('Error scanning agents:', error);

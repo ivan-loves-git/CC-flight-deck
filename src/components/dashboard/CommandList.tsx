@@ -40,6 +40,14 @@ export function CommandList({ commands }: CommandListProps) {
                   Global
                 </Badge>
               )}
+              {command.scope === 'plugin' && (
+                <Badge
+                  variant="outline"
+                  className="bg-purple-600 text-white border-purple-600 shrink-0"
+                >
+                  Plugin
+                </Badge>
+              )}
             </div>
           ))}
         </div>

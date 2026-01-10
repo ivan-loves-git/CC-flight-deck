@@ -11,8 +11,9 @@ export interface Command {
   path: string;
   description: string;
   lastModified: Date;
-  scope: 'global' | 'project';
+  scope: 'global' | 'project' | 'plugin';
   projectName?: string;
+  pluginName?: string; // If from a plugin, which one
 }
 
 /**
@@ -23,6 +24,9 @@ export interface Agent {
   path: string;
   description: string;
   lastModified: Date;
+  scope: 'global' | 'plugin';
+  pluginName?: string; // If from a plugin, which one
+  category?: string; // Agent category (e.g., 'review', 'research', 'design')
 }
 
 /**
@@ -55,6 +59,8 @@ export interface Skill {
   path: string;
   description: string;
   lastModified: Date;
+  scope: 'global' | 'plugin';
+  pluginName?: string; // If from a plugin, which one
 }
 
 /**
@@ -67,4 +73,28 @@ export interface ScanResponse {
   hooks: Hook[];
   skills: Skill[];
   scannedAt: Date;
+}
+
+/**
+ * ItemType - Type of customization item
+ */
+export type ItemType = 'command' | 'agent' | 'plugin' | 'hook' | 'skill';
+
+/**
+ * UnifiedItem - A unified representation of any item for table display
+ */
+export interface UnifiedItem {
+  id: string; // Unique ID (path or name)
+  name: string;
+  type: ItemType;
+  description: string;
+  path: string;
+  lastModified: Date;
+  scope: 'global' | 'project' | 'plugin' | 'n/a';
+  pluginName?: string;
+  category?: string; // For agents
+  enabled?: boolean; // For plugins
+  version?: string; // For plugins
+  source?: string; // For plugins
+  hookType?: 'shell' | 'node' | 'other'; // For hooks
 }

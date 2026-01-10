@@ -15,6 +15,7 @@ import {
 import { Terminal, Bot, Puzzle, Zap, Target, ChevronDown, Loader2 } from 'lucide-react';
 import type { ScanResponse, Command, Agent, Plugin, Hook, Skill } from '@/lib/types';
 import { getFavorites } from '@/lib/favorites';
+import { AllItemsTable } from '@/components/dashboard/AllItemsTable';
 
 type CommandFilter = 'all' | 'global' | 'project';
 
@@ -23,7 +24,7 @@ export default function Home() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
-  const [activeCategory, setActiveCategory] = useState<CategoryType>('commands');
+  const [activeCategory, setActiveCategory] = useState<CategoryType>('all');
   const [commandFilter, setCommandFilter] = useState<CommandFilter>('all');
   const [favorites, setFavorites] = useState<Set<string>>(new Set());
   const [collapsedSections, setCollapsedSections] = useState<Record<string, boolean>>({});
@@ -99,7 +100,7 @@ export default function Home() {
 
   // Get category counts
   const getCounts = () => {
-    if (!data) return { commands: 0, agents: 0, plugins: 0, hooks: 0, skills: 0, favorites: 0 };
+    if (!data) return { commands: 0, agents: 0, plugins: 0, hooks: 0, skills: 0, favorites: 0, all: 0 };
 
     const allItems = [
       ...data.commands,
@@ -109,6 +110,8 @@ export default function Home() {
       ...data.skills,
     ];
 
+    const totalAll = data.commands.length + data.agents.length + data.plugins.length + data.hooks.length + data.skills.length;
+
     return {
       commands: data.commands.length,
       agents: data.agents.length,
@@ -116,6 +119,7 @@ export default function Home() {
       hooks: data.hooks.length,
       skills: data.skills.length,
       favorites: allItems.filter((item) => favorites.has(item.path)).length,
+      all: totalAll,
     };
   };
 
@@ -124,6 +128,10 @@ export default function Home() {
     if (!data) return null;
 
     switch (activeCategory) {
+      case 'all': {
+        return <AllItemsTable scanData={data} />;
+      }
+
       case 'commands': {
         let commands = filterBySearch(data.commands);
         if (commandFilter === 'global') {
