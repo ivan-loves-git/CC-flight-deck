@@ -44,6 +44,7 @@ export function DiaryView() {
   const [sessionSortDir, setSessionSortDir] = useState<'asc' | 'desc'>('desc');
   const [projectViewMode, setProjectViewMode] = useState<'project' | 'category'>('project');
   const [commits, setCommits] = useState<Commit[]>([]);
+  const [showTrendLine, setShowTrendLine] = useState(true);
 
   useEffect(() => {
     async function fetchData() {
@@ -224,11 +225,13 @@ export function DiaryView() {
       });
   }, [data, periodConfig, sessionSearch, sessionSort, sessionSortDir, today]);
 
-  // Get daily data for charts
+  // Get daily data for charts with 7-day moving average
   const dailyData = useMemo(() => {
     if (!data?.stats?.daily) return [];
     const days = eachDayOfInterval({ start: subDays(today, 13), end: today });
-    return days.map(day => {
+
+    // First pass: get raw hours data
+    const rawData = days.map(day => {
       const dateKey = format(day, 'yyyy-MM-dd');
       const dayData = data.stats?.daily[dateKey];
       return {
@@ -237,8 +240,19 @@ export function DiaryView() {
         hours: (dayData?.activeMinutes || 0) / 60,
         sessions: dayData?.sessions || 0,
         projects: dayData?.projects || [],
+        movingAvg: 0,
       };
     });
+
+    // Second pass: calculate 7-day moving average
+    for (let i = 0; i < rawData.length; i++) {
+      const windowStart = Math.max(0, i - 6);
+      const window = rawData.slice(windowStart, i + 1);
+      const sum = window.reduce((acc, d) => acc + d.hours, 0);
+      rawData[i].movingAvg = sum / window.length;
+    }
+
+    return rawData;
   }, [data, today]);
 
   if (loading) {
@@ -361,10 +375,21 @@ export function DiaryView() {
       {/* Row 2: Daily Activity Bar Chart (Stacked by Project) */}
       <Card>
         <CardHeader className="pb-2">
-          <CardTitle className="text-base">Daily Activity (Last 14 Days)</CardTitle>
+          <div className="flex items-center justify-between">
+            <CardTitle className="text-base">Daily Activity (Last 14 Days)</CardTitle>
+            <Button
+              variant={showTrendLine ? 'default' : 'outline'}
+              size="sm"
+              onClick={() => setShowTrendLine(!showTrendLine)}
+              className="h-7 text-xs gap-1"
+            >
+              <TrendingUp className="h-3 w-3" />
+              Trend
+            </Button>
+          </div>
         </CardHeader>
         <CardContent>
-          <div className="space-y-2">
+          <div className="space-y-2 relative">
             {dailyData.map((day) => {
               const isToday = isSameDay(parseISO(day.date), today);
               const maxHours = Math.max(...dailyData.map(d => d.hours), 8);
@@ -414,6 +439,40 @@ export function DiaryView() {
                 </div>
               );
             })}
+            {/* Trend Line Overlay - 7-day moving average dots */}
+            {showTrendLine && dailyData.length > 0 && (() => {
+              const maxHours = Math.max(...dailyData.map(d => d.hours), 8);
+              const rowHeight = 36;
+              return (
+                <div
+                  className="absolute pointer-events-none"
+                  style={{
+                    top: 0,
+                    left: '4rem',
+                    right: '4rem',
+                    height: `${dailyData.length * rowHeight}px`,
+                  }}
+                >
+                  {/* Dots showing 7-day moving average */}
+                  {dailyData.map((day, i) => {
+                    const x = (day.movingAvg / maxHours) * 100;
+                    const y = i * rowHeight + rowHeight / 2;
+                    return (
+                      <div
+                        key={day.date}
+                        className="absolute w-2.5 h-2.5 rounded-full bg-primary/70 border border-primary"
+                        style={{
+                          left: `${x}%`,
+                          top: `${y}px`,
+                          transform: 'translate(-50%, -50%)',
+                        }}
+                        title={`7-day avg: ${day.movingAvg.toFixed(1)}h`}
+                      />
+                    );
+                  })}
+                </div>
+              );
+            })()}
           </div>
         </CardContent>
       </Card>
