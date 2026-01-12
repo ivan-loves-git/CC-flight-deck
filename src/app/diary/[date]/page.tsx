@@ -27,6 +27,8 @@ import {
   FileText,
   Wrench,
   Activity,
+  GitCommit,
+  Pause,
 } from 'lucide-react';
 import { format, parseISO } from 'date-fns';
 
@@ -36,12 +38,22 @@ interface Session {
   filePath?: string;
   date: string;
   activeMinutes: number;
+  idleMinutesExcluded?: number;
   fileSize: number;
   projects: string[];
   commands: Record<string, number>;
   agents: Record<string, number>;
   tools: Record<string, number>;
   summary?: string;
+}
+
+interface Commit {
+  hash: string;
+  shortHash: string;
+  message: string;
+  timestamp: string;
+  project: string;
+  author?: string;
 }
 
 interface DayDetail {
@@ -64,6 +76,7 @@ export default function DayDetailPage({ params }: { params: Promise<{ date: stri
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [layout, setLayout] = useState<LayoutType>('cards');
+  const [commits, setCommits] = useState<Commit[]>([]);
 
   useEffect(() => {
     async function fetchDayDetail() {
@@ -79,6 +92,22 @@ export default function DayDetailPage({ params }: { params: Promise<{ date: stri
       }
     }
     fetchDayDetail();
+  }, [resolvedParams.date]);
+
+  // Fetch commits for this day
+  useEffect(() => {
+    async function fetchCommits() {
+      try {
+        const response = await fetch(`/api/commits?from=${resolvedParams.date}&to=${resolvedParams.date}`);
+        if (response.ok) {
+          const data = await response.json();
+          setCommits(data.commits || []);
+        }
+      } catch {
+        // ignore
+      }
+    }
+    fetchCommits();
   }, [resolvedParams.date]);
 
   if (loading) {
@@ -288,6 +317,40 @@ export default function DayDetailPage({ params }: { params: Promise<{ date: stri
             </Card>
           </div>
         )}
+
+        {/* Git Commits Section */}
+        {commits.length > 0 && (
+          <Card className="mt-6">
+            <CardHeader>
+              <CardTitle className="text-base flex items-center gap-2">
+                <GitCommit className="h-4 w-4" />
+                Commits ({commits.length})
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-3">
+                {commits.map((commit) => (
+                  <div key={commit.hash} className="flex items-start gap-3 p-3 rounded-lg bg-muted/30">
+                    <Badge variant="outline" className="shrink-0 font-mono text-xs">
+                      {commit.shortHash}
+                    </Badge>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium truncate">{commit.message}</p>
+                      <div className="flex items-center gap-2 mt-1">
+                        <Badge variant="secondary" className="text-xs">
+                          {getProjectName(commit.project)}
+                        </Badge>
+                        <span className="text-xs text-muted-foreground">
+                          {format(parseISO(commit.timestamp), 'HH:mm')}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        )}
       </div>
     </div>
   );
@@ -477,14 +540,23 @@ function SessionCard({ session }: { session: Session }) {
             )}
 
             {/* Session KPIs */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+            <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
               <div className="bg-muted/30 rounded-lg p-3 text-center">
                 <div className="flex items-center justify-center gap-1 text-muted-foreground mb-1">
                   <Clock className="h-3.5 w-3.5" />
-                  <span className="text-xs">Duration</span>
+                  <span className="text-xs">Active Time</span>
                 </div>
                 <p className="font-semibold">{formatMinutes(session.activeMinutes)}</p>
               </div>
+              {session.idleMinutesExcluded !== undefined && session.idleMinutesExcluded > 0 && (
+                <div className="bg-amber-500/10 rounded-lg p-3 text-center">
+                  <div className="flex items-center justify-center gap-1 text-amber-600 mb-1">
+                    <Pause className="h-3.5 w-3.5" />
+                    <span className="text-xs">Idle Excluded</span>
+                  </div>
+                  <p className="font-semibold text-amber-600">{formatMinutes(session.idleMinutesExcluded)}</p>
+                </div>
+              )}
               <div className="bg-muted/30 rounded-lg p-3 text-center">
                 <div className="flex items-center justify-center gap-1 text-muted-foreground mb-1">
                   <Terminal className="h-3.5 w-3.5" />

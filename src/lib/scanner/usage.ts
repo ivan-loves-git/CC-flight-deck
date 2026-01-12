@@ -1,13 +1,78 @@
-import { readFile } from 'fs/promises';
+import { readFile, stat } from 'fs/promises';
 import type { UsageStats } from '@/lib/types';
 import { FLIGHT_DATA_PATH, USAGE_STATS_PATH } from '@/lib/constants';
 
+// ============================================================================
+// In-Memory Cache for flight-data.json
+// ============================================================================
+
+interface CacheEntry {
+  data: UsageStats;
+  timestamp: number;
+  fileMtime: number;
+}
+
+const CACHE_TTL_MS = 5 * 60 * 1000; // 5 minutes
+let usageStatsCache: CacheEntry | null = null;
+
+/**
+ * Check if cache is valid (not expired and file hasn't changed)
+ */
+async function isCacheValid(): Promise<boolean> {
+  if (!usageStatsCache) return false;
+
+  const now = Date.now();
+  const age = now - usageStatsCache.timestamp;
+
+  // Check TTL
+  if (age > CACHE_TTL_MS) return false;
+
+  // Check if file was modified since cache was populated
+  try {
+    const fileStat = await stat(FLIGHT_DATA_PATH);
+    const fileMtime = fileStat.mtimeMs;
+    if (fileMtime > usageStatsCache.fileMtime) return false;
+  } catch {
+    // File doesn't exist or can't be accessed, cache is invalid
+    return false;
+  }
+
+  return true;
+}
+
+/**
+ * Clear the usage stats cache
+ */
+export function clearUsageStatsCache(): void {
+  usageStatsCache = null;
+}
+
+/**
+ * Get cache info for debugging/monitoring
+ */
+export function getCacheInfo(): { cached: boolean; age: number | null; ttl: number } {
+  return {
+    cached: usageStatsCache !== null,
+    age: usageStatsCache ? Date.now() - usageStatsCache.timestamp : null,
+    ttl: CACHE_TTL_MS,
+  };
+}
+
 /**
  * Scan and read usage statistics from flight-data.json (or legacy usage-stats.json)
+ * @param forceRefresh - If true, bypasses cache and reads from disk
  */
-export async function scanUsageStats(): Promise<UsageStats | null> {
+export async function scanUsageStats(forceRefresh = false): Promise<UsageStats | null> {
+  // Check cache first (unless force refresh)
+  if (!forceRefresh && await isCacheValid()) {
+    return usageStatsCache!.data;
+  }
   // Try flight-data.json first (new unified format from /term-diary)
   try {
+    // Get file modification time for cache invalidation
+    const fileStat = await stat(FLIGHT_DATA_PATH);
+    const fileMtime = fileStat.mtimeMs;
+
     const content = await readFile(FLIGHT_DATA_PATH, 'utf-8');
     const flightData = JSON.parse(content);
 
@@ -91,12 +156,19 @@ export async function scanUsageStats(): Promise<UsageStats | null> {
       }
     }
 
+    // Populate cache before returning
+    usageStatsCache = {
+      data: stats,
+      timestamp: Date.now(),
+      fileMtime,
+    };
+
     return stats;
   } catch {
     // flight-data.json doesn't exist or failed to parse, try legacy file
   }
 
-  // Fall back to legacy usage-stats.json
+  // Fall back to legacy usage-stats.json (no caching for legacy format)
   try {
     const content = await readFile(USAGE_STATS_PATH, 'utf-8');
     const stats: UsageStats = JSON.parse(content);
@@ -105,6 +177,8 @@ export async function scanUsageStats(): Promise<UsageStats | null> {
     // Legacy file doesn't exist either
   }
 
+  // Clear cache if we couldn't load any data
+  usageStatsCache = null;
   return null;
 }
 

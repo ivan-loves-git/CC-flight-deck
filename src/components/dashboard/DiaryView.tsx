@@ -25,12 +25,17 @@ import {
   GitCommit,
   AlertCircle,
   Trophy,
+  Download,
 } from 'lucide-react';
 import { format, subDays, eachDayOfInterval, isSameDay, parseISO, formatDistanceToNow, differenceInHours } from 'date-fns';
 import { useRouter } from 'next/navigation';
 import type { UsageStats, DashboardResponse, Session, Commit, CommitsResponse } from '@/lib/types';
 import { getProjectColor, getProjectName, getProjectCategory, PROJECT_COLORS, formatMinutes, extractTimeFromId } from '@/lib/diary-utils';
+import { checkDataHealth, type DataHealthWarning } from '@/lib/data-health';
+import { generateInsights, type Insight } from '@/lib/insights';
 import { PersonalRecords } from './PersonalRecords';
+import { DataHealthWarnings } from './DataHealthWarnings';
+import { DailyInsights } from './DailyInsights';
 
 type PeriodType = 'today' | 'week' | '15days' | 'month';
 
@@ -255,6 +260,18 @@ export function DiaryView() {
     return rawData;
   }, [data, today]);
 
+  // Compute data health warnings
+  const dataHealthWarnings = useMemo((): DataHealthWarning[] => {
+    if (!data?.sessions || !data?.stats?.daily) return [];
+    return checkDataHealth(data.sessions, data.stats.daily);
+  }, [data]);
+
+  // Generate daily insights
+  const insights = useMemo((): Insight[] => {
+    if (!data?.sessions || !data?.stats?.daily) return [];
+    return generateInsights(data.sessions, data.stats.daily);
+  }, [data]);
+
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
@@ -272,6 +289,18 @@ export function DiaryView() {
   }
 
   const { stats } = data;
+
+  // Export handler
+  const handleExport = async (format: 'json' | 'csv') => {
+    const periodDays = period === 'today' ? 1 : period === 'week' ? 7 : period === '15days' ? 15 : 30;
+    const fromDate = new Date(today);
+    fromDate.setDate(fromDate.getDate() - periodDays + 1);
+    const from = fromDate.toISOString().split('T')[0];
+    const to = today.toISOString().split('T')[0];
+
+    const url = `/api/export?format=${format}&from=${from}&to=${to}`;
+    window.open(url, '_blank');
+  };
 
   return (
     <div className="space-y-6 p-6">
@@ -295,18 +324,40 @@ export function DiaryView() {
               </div>
             )}
           </div>
-          <Select value={period} onValueChange={(v) => setPeriod(v as PeriodType)}>
-            <SelectTrigger className="w-40">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="today">Today</SelectItem>
-              <SelectItem value="week">This Week</SelectItem>
-              <SelectItem value="15days">Last 15 Days</SelectItem>
-              <SelectItem value="month">This Month</SelectItem>
-            </SelectContent>
-          </Select>
+          <div className="flex items-center gap-2">
+            <Select value={period} onValueChange={(v) => setPeriod(v as PeriodType)}>
+              <SelectTrigger className="w-40">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="today">Today</SelectItem>
+                <SelectItem value="week">This Week</SelectItem>
+                <SelectItem value="15days">Last 15 Days</SelectItem>
+                <SelectItem value="month">This Month</SelectItem>
+              </SelectContent>
+            </Select>
+            <Select onValueChange={(v) => handleExport(v as 'json' | 'csv')}>
+              <SelectTrigger className="w-32">
+                <Download className="h-4 w-4 mr-2" />
+                <span>Export</span>
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="json">JSON</SelectItem>
+                <SelectItem value="csv">CSV</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
         </div>
+
+        {/* Data Health Warnings */}
+        {dataHealthWarnings.length > 0 && (
+          <DataHealthWarnings warnings={dataHealthWarnings} />
+        )}
+
+        {/* Daily Insights */}
+        {insights.length > 0 && (
+          <DailyInsights insights={insights} />
+        )}
 
         {periodStats && (
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
