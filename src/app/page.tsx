@@ -18,6 +18,7 @@ import { getFavorites } from '@/lib/favorites';
 import { AllItemsTable } from '@/components/dashboard/AllItemsTable';
 import { AllSessionsTable } from '@/components/dashboard/AllSessionsTable';
 import { DiaryView } from '@/components/dashboard/DiaryView';
+import { DiaryViewCompact } from '@/components/dashboard/DiaryViewCompact';
 
 type CommandFilter = 'all' | 'global' | 'project';
 
@@ -401,6 +402,10 @@ export default function Home() {
 
       case 'diary': {
         return <DiaryView />;
+      }
+
+      case 'compact': {
+        return <DiaryViewCompact />;
       }
 
       case 'sessions': {

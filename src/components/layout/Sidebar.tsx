@@ -13,6 +13,7 @@ import {
   TableProperties,
   BookOpen,
   Play,
+  LayoutGrid,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -24,7 +25,7 @@ import {
 } from '@/components/ui/tooltip';
 import { cn } from '@/lib/utils';
 
-export type CategoryType = 'commands' | 'agents' | 'plugins' | 'hooks' | 'skills' | 'favorites' | 'all' | 'diary' | 'sessions';
+export type CategoryType = 'commands' | 'agents' | 'plugins' | 'hooks' | 'skills' | 'favorites' | 'all' | 'diary' | 'sessions' | 'compact';
 
 interface SidebarProps {
   activeCategory: CategoryType;
@@ -44,6 +45,7 @@ interface SidebarProps {
 
 const categories: { id: CategoryType; label: string; icon: typeof Terminal }[] = [
   { id: 'diary', label: 'Diary', icon: BookOpen },
+  { id: 'compact', label: 'Compact', icon: LayoutGrid },
   { id: 'sessions', label: 'All Sessions', icon: Play },
   { id: 'all', label: 'All Items', icon: TableProperties },
   { id: 'commands', label: 'Commands', icon: Terminal },
