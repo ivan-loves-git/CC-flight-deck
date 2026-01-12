@@ -49,8 +49,11 @@ npm run build # Build for production
 
 ~~Deleted on 2026-01-12:~~
 - ~~DiaryVariantA.tsx, DiaryVariantB.tsx, DiaryVariantC.tsx, DiaryVariantD.tsx~~
+- ~~DiaryViewCompact.tsx, DiaryUltraA.tsx, DiaryUltraB.tsx, DiaryUltraC.tsx, DiaryUltraD.tsx~~
 - ~~diary/variants/page.tsx~~
 - ~~Unused addFavorite/removeFavorite functions in favorites.ts~~
+- ~~SPEC-DIARY-REDESIGN.md, PRODUCT_SPEC.md, IMPROVEMENT_ANALYSIS.md, DATA_FLOW_ARCHITECTURE.md~~
+- ~~Unused sidebar category types and icon imports~~
 
 ---
 
@@ -67,31 +70,29 @@ Scanner pattern duplication in `commands.ts`, `agents.ts`, `skills.ts`, `hooks.t
 
 ---
 
-## Priority 3: Performance Optimizations
+## Priority 3: Performance Optimizations - PARTIALLY DONE
 
-### Dual Fetch Calls in DiaryView (lines 105-127)
+### In-Memory Caching - DONE
+~~Added on 2026-01-12:~~
+- ~~5-minute TTL cache in `/src/lib/scanner/usage.ts`~~
+- ~~File modification tracking to invalidate stale cache~~
+- ~~`clearUsageStatsCache()` and `getCacheInfo()` helpers~~
+
+### Remaining Items (Low Priority)
+
+**Dual Fetch Calls in DiaryView**
 ```typescript
 const diaryRes = await fetch('/api/diary');   // Reads flight-data.json
 const flightResponse = await fetch('/api/scan'); // Reads same file again!
 ```
-**Action**: Create unified `/api/dashboard` endpoint or merge data fetching
+Could create unified `/api/dashboard` endpoint but not critical with caching
 
-### Unstable useMemo Dependency
+**Unstable useMemo Dependency**
 ```typescript
 const periodStats = useMemo(() => {...}, [data, period, periodConfig, today]);
 // `today` is `new Date()` - creates new reference every render!
 ```
-**Action**: Memoize `today` with `useMemo(() => new Date(), [])`
-
-### Synchronous File I/O
-```typescript
-fs.readFileSync(FLIGHT_DATA_PATH, 'utf-8'); // Blocks event loop
-```
-**Action**: Use `await readFile()` from `fs/promises`
-
-### Missing Data Caching
-Every page load reads `flight-data.json` from disk.
-**Action**: Add in-memory cache with TTL (data only changes when /term-diary runs)
+Should memoize `today` with `useMemo(() => new Date(), [])`
 
 ---
 
@@ -120,6 +121,35 @@ Standardize across components:
 
 ---
 
+## New Features Added (2026-01-12)
+
+### Data Health Warnings (`/src/lib/data-health.ts`)
+Detects data quality issues:
+- Identical session durations (calculation fallback indicator)
+- Days exceeding 16 hours (parallel session indicator)
+- Sessions without project association
+- Very short sessions (<2 min)
+
+### Daily Insights (`/src/lib/insights.ts`)
+Pattern detection and nudges:
+- Coding streaks (consecutive days)
+- Productivity trends (week-over-week)
+- Hour/session milestones
+- Start time pattern shifts (early bird/night owl)
+- Forgotten tools (unused commands)
+- Weekend vs weekday patterns
+
+### Export Functionality (`/src/app/api/export/route.ts`)
+- JSON and CSV format support
+- Date range filtering
+- Accessible via Export dropdown in DiaryView header
+
+### Enhanced Session Details
+- Idle time tracking (`idleMinutesExcluded` field)
+- Commits section on day detail page
+
+---
+
 ## Code Quality Metrics
 
 | Metric | Before | After | Target |
@@ -128,8 +158,9 @@ Standardize across components:
 | Duplicate interfaces | 8+ | 0 | 0 ✓ |
 | Duplicate helpers | 5+ files | 1 file | 1 file ✓ |
 | Duplicate path constants | 3 files | 1 file | 1 file ✓ |
-| Component max lines | 638 | 565 | 200 |
+| Component max lines | 638 | ~700 | 200 |
 | Type coverage | 95% | 98% | 100% |
+| New feature modules | 0 | 4 | - |
 
 ---
 

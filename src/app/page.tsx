@@ -18,11 +18,6 @@ import { getFavorites } from '@/lib/favorites';
 import { AllItemsTable } from '@/components/dashboard/AllItemsTable';
 import { AllSessionsTable } from '@/components/dashboard/AllSessionsTable';
 import { DiaryView } from '@/components/dashboard/DiaryView';
-import { DiaryViewCompact } from '@/components/dashboard/DiaryViewCompact';
-import { DiaryUltraA } from '@/components/dashboard/DiaryUltraA';
-import { DiaryUltraB } from '@/components/dashboard/DiaryUltraB';
-import { DiaryUltraC } from '@/components/dashboard/DiaryUltraC';
-import { DiaryUltraD } from '@/components/dashboard/DiaryUltraD';
 
 type CommandFilter = 'all' | 'global' | 'project';
 
@@ -406,26 +401,6 @@ export default function Home() {
 
       case 'diary': {
         return <DiaryView />;
-      }
-
-      case 'compact': {
-        return <DiaryViewCompact />;
-      }
-
-      case 'ultra-a': {
-        return <DiaryUltraA />;
-      }
-
-      case 'ultra-b': {
-        return <DiaryUltraB />;
-      }
-
-      case 'ultra-c': {
-        return <DiaryUltraC />;
-      }
-
-      case 'ultra-d': {
-        return <DiaryUltraD />;
       }
 
       case 'sessions': {
