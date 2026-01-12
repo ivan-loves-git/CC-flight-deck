@@ -24,11 +24,13 @@ import {
   Target,
   GitCommit,
   AlertCircle,
+  Trophy,
 } from 'lucide-react';
 import { format, subDays, eachDayOfInterval, isSameDay, parseISO, formatDistanceToNow, differenceInHours } from 'date-fns';
 import { useRouter } from 'next/navigation';
 import type { UsageStats, DashboardResponse, Session, Commit, CommitsResponse } from '@/lib/types';
 import { getProjectColor, getProjectName, getProjectCategory, PROJECT_COLORS, formatMinutes, extractTimeFromId } from '@/lib/diary-utils';
+import { PersonalRecords } from './PersonalRecords';
 
 type PeriodType = 'today' | 'week' | '15days' | 'month';
 
@@ -350,6 +352,11 @@ export function DiaryView() {
           </div>
         )}
       </div>
+
+      {/* Personal Records */}
+      {data?.sessions && data?.stats?.daily && (
+        <PersonalRecords sessions={data.sessions} daily={data.stats.daily} />
+      )}
 
       {/* Row 2: Daily Activity Bar Chart (Stacked by Project) */}
       <Card>
