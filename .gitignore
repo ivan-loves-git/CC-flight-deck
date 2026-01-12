@@ -45,3 +45,36 @@ next-env.d.ts
 *.swp
 *.swo
 *~
+
+# Logs
+logs
+*.log
+dev-debug.log
+# Dependency directories
+node_modules/
+# Environment variables
+.env
+# Editor directories and files
+.idea
+.vscode
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+# OS specific
+
+# Task files
+# tasks.json
+# tasks/
+.taskmaster/
+
+# Electron build output
+dist/
+
+# Generated/personal data (not for repo)
+flight-data.json
+term-diary.md
+
+# Temp files
+components*.json 

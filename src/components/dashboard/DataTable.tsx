@@ -51,6 +51,7 @@ import {
   SlidersHorizontal,
   ChevronLeft,
   ChevronRight,
+  Activity,
 } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 
@@ -108,6 +109,36 @@ export function DataTable({ data, onRowClick }: DataTableProps) {
   }, [data, typeFilter, scopeFilter, enabledFilter]);
 
   const columns: ColumnDef<UnifiedItem>[] = [
+    {
+      accessorKey: 'usageCount',
+      header: ({ column }) => (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+          className="h-8 px-2"
+        >
+          <Activity className="h-4 w-4 mr-1" />
+          Used
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      ),
+      cell: ({ row }) => {
+        const count = row.getValue('usageCount') as number;
+        if (!count || count === 0) {
+          return <span className="text-muted-foreground text-sm">-</span>;
+        }
+        return (
+          <span className="font-medium text-sm tabular-nums">
+            {count}x
+          </span>
+        );
+      },
+      sortingFn: (rowA, rowB) => {
+        const countA = (rowA.getValue('usageCount') as number) || 0;
+        const countB = (rowB.getValue('usageCount') as number) || 0;
+        return countA - countB;
+      },
+    },
     {
       accessorKey: 'type',
       header: ({ column }) => (

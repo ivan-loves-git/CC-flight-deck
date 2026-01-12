@@ -16,6 +16,8 @@ import { Terminal, Bot, Puzzle, Zap, Target, ChevronDown, Loader2 } from 'lucide
 import type { ScanResponse, Command, Agent, Plugin, Hook, Skill } from '@/lib/types';
 import { getFavorites } from '@/lib/favorites';
 import { AllItemsTable } from '@/components/dashboard/AllItemsTable';
+import { AllSessionsTable } from '@/components/dashboard/AllSessionsTable';
+import { DiaryView } from '@/components/dashboard/DiaryView';
 
 type CommandFilter = 'all' | 'global' | 'project';
 
@@ -24,7 +26,7 @@ export default function Home() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
-  const [activeCategory, setActiveCategory] = useState<CategoryType>('all');
+  const [activeCategory, setActiveCategory] = useState<CategoryType>('diary');
   const [commandFilter, setCommandFilter] = useState<CommandFilter>('all');
   const [favorites, setFavorites] = useState<Set<string>>(new Set());
   const [collapsedSections, setCollapsedSections] = useState<Record<string, boolean>>({});
@@ -100,7 +102,7 @@ export default function Home() {
 
   // Get category counts
   const getCounts = () => {
-    if (!data) return { commands: 0, agents: 0, plugins: 0, hooks: 0, skills: 0, favorites: 0, all: 0 };
+    if (!data) return { commands: 0, agents: 0, plugins: 0, hooks: 0, skills: 0, favorites: 0, all: 0, diary: 0, sessions: 0 };
 
     const allItems = [
       ...data.commands,
@@ -120,6 +122,7 @@ export default function Home() {
       skills: data.skills.length,
       favorites: allItems.filter((item) => favorites.has(item.path)).length,
       all: totalAll,
+      diary: 0, // Diary doesn't have a count, it's a view
     };
   };
 
@@ -394,6 +397,14 @@ export default function Home() {
             )}
           </div>
         );
+      }
+
+      case 'diary': {
+        return <DiaryView />;
+      }
+
+      case 'sessions': {
+        return <AllSessionsTable />;
       }
 
       default:

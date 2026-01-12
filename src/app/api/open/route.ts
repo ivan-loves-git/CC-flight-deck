@@ -11,6 +11,7 @@ const execFileAsync = promisify(execFile);
 const ALLOWED_BASES = [
   path.join(os.homedir(), '.claude'),
   path.join(os.homedir(), 'Library', 'Mobile Documents', 'com~apple~CloudDocs', 'Progetti'),
+  path.join(os.homedir(), 'Library', 'Application Support', 'iTerm2', 'iterm2-shell-integration', 'logs'),
 ];
 
 function isPathAllowed(filePath: string): boolean {
