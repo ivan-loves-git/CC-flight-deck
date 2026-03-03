@@ -1,13 +1,5 @@
 'use client';
 
-/**
- * Variant C: "Heatmap Focus"
- * - Calendar heatmap as centerpiece
- * - Compact stat pills
- * - Visual at-a-glance design
- * - Minimal text, maximum visual data
- */
-
 import { useState, useEffect, useMemo } from 'react';
 import { Loader2 } from 'lucide-react';
 import { format, subDays, eachDayOfInterval, parseISO, startOfWeek, getDay } from 'date-fns';
@@ -47,7 +39,6 @@ export function DiaryUltraC() {
 
   const today = useMemo(() => new Date(), []);
 
-  // 30-day stats
   const stats = useMemo(() => {
     if (!data?.stats?.daily) return null;
     const start = subDays(today, 29);
@@ -66,10 +57,9 @@ export function DiaryUltraC() {
     return { sessions, hours: Math.round(minutes / 6) / 10, commands, agents, projects: projects.size };
   }, [data, today]);
 
-  // Heatmap data: 5 weeks
   const heatmapData = useMemo(() => {
     if (!data?.stats?.daily) return [];
-    const start = subDays(startOfWeek(today), 28); // 5 weeks back
+    const start = subDays(startOfWeek(today), 28);
     const days = eachDayOfInterval({ start, end: today });
 
     return days.map(day => {
@@ -102,7 +92,6 @@ export function DiaryUltraC() {
   if (loading) return <div className="flex items-center justify-center h-40"><Loader2 className="h-5 w-5 animate-spin" /></div>;
   if (!data?.hasData) return <div className="text-center py-6 text-muted-foreground text-xs">No data</div>;
 
-  // Group heatmap by week
   const weeks: typeof heatmapData[] = [];
   for (let i = 0; i < heatmapData.length; i += 7) {
     weeks.push(heatmapData.slice(i, i + 7));
@@ -112,7 +101,6 @@ export function DiaryUltraC() {
 
   return (
     <div className="p-2 text-[10px] space-y-2">
-      {/* Stats Pills */}
       {stats && (
         <div className="flex gap-2 flex-wrap">
           <Pill label="Hours" value={stats.hours} color="bg-blue-500/20 text-blue-400" />
@@ -123,17 +111,13 @@ export function DiaryUltraC() {
         </div>
       )}
 
-      {/* Main Grid */}
       <div className="grid grid-cols-3 gap-2">
-        {/* Heatmap */}
         <div className="col-span-2">
           <div className="text-[9px] text-muted-foreground mb-1">ACTIVITY (5 WEEKS)</div>
           <div className="flex gap-0.5">
-            {/* Day labels */}
             <div className="flex flex-col gap-0.5 text-[8px] text-muted-foreground pr-1">
               <span>S</span><span>M</span><span>T</span><span>W</span><span>T</span><span>F</span><span>S</span>
             </div>
-            {/* Weeks */}
             {weeks.map((week, wi) => (
               <div key={wi} className="flex flex-col gap-0.5">
                 {[0, 1, 2, 3, 4, 5, 6].map(dow => {
@@ -144,14 +128,12 @@ export function DiaryUltraC() {
                       key={day.date}
                       className={`w-4 h-4 rounded-sm cursor-pointer ${intensityColors[day.intensity]}`}
                       onClick={() => router.push(`/diary/${day.date}`)}
-                      title={`${day.date}: ${day.hours.toFixed(1)}h`}
                     />
                   );
                 })}
               </div>
             ))}
           </div>
-          {/* Legend */}
           <div className="flex items-center gap-1 mt-1 text-[8px] text-muted-foreground">
             <span>Less</span>
             {intensityColors.map((c, i) => <div key={i} className={`w-3 h-3 rounded-sm ${c}`} />)}
@@ -159,7 +141,6 @@ export function DiaryUltraC() {
           </div>
         </div>
 
-        {/* Projects */}
         <div>
           <div className="text-[9px] text-muted-foreground mb-1">TOP PROJECTS</div>
           <div className="space-y-1">
@@ -174,9 +155,7 @@ export function DiaryUltraC() {
         </div>
       </div>
 
-      {/* Bottom: Commands + Sessions + Commits */}
       <div className="grid grid-cols-3 gap-2 border-t pt-2">
-        {/* Commands */}
         <div>
           <div className="text-[9px] text-muted-foreground mb-1">COMMANDS</div>
           <div className="flex flex-wrap gap-1">
@@ -188,7 +167,6 @@ export function DiaryUltraC() {
           </div>
         </div>
 
-        {/* Sessions */}
         <div>
           <div className="text-[9px] text-muted-foreground mb-1">RECENT</div>
           <div className="space-y-0.5">
@@ -201,7 +179,6 @@ export function DiaryUltraC() {
           </div>
         </div>
 
-        {/* Commits */}
         <div>
           <div className="text-[9px] text-muted-foreground mb-1">COMMITS ({commits.length})</div>
           <div className="space-y-0.5">

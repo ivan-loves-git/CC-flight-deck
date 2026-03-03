@@ -18,6 +18,10 @@ import { getFavorites } from '@/lib/favorites';
 import { AllItemsTable } from '@/components/dashboard/AllItemsTable';
 import { AllSessionsTable } from '@/components/dashboard/AllSessionsTable';
 import { DiaryView } from '@/components/dashboard/DiaryView';
+import { DiaryUltraA } from '@/components/dashboard/DiaryUltraA';
+import { DiaryUltraB } from '@/components/dashboard/DiaryUltraB';
+import { DiaryUltraC } from '@/components/dashboard/DiaryUltraC';
+import { DiaryUltraD } from '@/components/dashboard/DiaryUltraD';
 
 type CommandFilter = 'all' | 'global' | 'project';
 
@@ -102,7 +106,7 @@ export default function Home() {
 
   // Get category counts
   const getCounts = () => {
-    if (!data) return { commands: 0, agents: 0, plugins: 0, hooks: 0, skills: 0, favorites: 0, all: 0, diary: 0, sessions: 0 };
+    if (!data) return { commands: 0, agents: 0, plugins: 0, hooks: 0, skills: 0, favorites: 0, all: 0, diary: 0, sessions: 0, ultraA: 0, ultraB: 0, ultraC: 0, ultraD: 0 };
 
     const allItems = [
       ...data.commands,
@@ -405,6 +409,22 @@ export default function Home() {
 
       case 'sessions': {
         return <AllSessionsTable />;
+      }
+
+      case 'ultraA': {
+        return <DiaryUltraA />;
+      }
+
+      case 'ultraB': {
+        return <DiaryUltraB />;
+      }
+
+      case 'ultraC': {
+        return <DiaryUltraC />;
+      }
+
+      case 'ultraD': {
+        return <DiaryUltraD />;
       }
 
       default:

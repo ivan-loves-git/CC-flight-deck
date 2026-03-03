@@ -13,6 +13,10 @@ import {
   TableProperties,
   BookOpen,
   Play,
+  LayoutGrid,
+  TerminalSquare,
+  CalendarDays,
+  Columns,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -24,7 +28,7 @@ import {
 } from '@/components/ui/tooltip';
 import { cn } from '@/lib/utils';
 
-export type CategoryType = 'commands' | 'agents' | 'plugins' | 'hooks' | 'skills' | 'favorites' | 'all' | 'diary' | 'sessions';
+export type CategoryType = 'commands' | 'agents' | 'plugins' | 'hooks' | 'skills' | 'favorites' | 'all' | 'diary' | 'sessions' | 'ultraA' | 'ultraB' | 'ultraC' | 'ultraD';
 
 interface SidebarProps {
   activeCategory: CategoryType;
@@ -39,11 +43,19 @@ interface SidebarProps {
     all: number;
     diary?: number;
     sessions?: number;
+    ultraA?: number;
+    ultraB?: number;
+    ultraC?: number;
+    ultraD?: number;
   };
 }
 
 const categories: { id: CategoryType; label: string; icon: typeof Terminal }[] = [
   { id: 'diary', label: 'Diary', icon: BookOpen },
+  { id: 'ultraA', label: 'Ultra A', icon: LayoutGrid },
+  { id: 'ultraB', label: 'Ultra B', icon: TerminalSquare },
+  { id: 'ultraC', label: 'Ultra C', icon: CalendarDays },
+  { id: 'ultraD', label: 'Ultra D', icon: Columns },
   { id: 'sessions', label: 'All Sessions', icon: Play },
   { id: 'all', label: 'All Items', icon: TableProperties },
   { id: 'commands', label: 'Commands', icon: Terminal },

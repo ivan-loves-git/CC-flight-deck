@@ -1,20 +1,12 @@
 'use client';
 
-/**
- * Variant A: "Data Dense Grid"
- * - Tight 3-column grid
- * - Sparklines instead of bars
- * - Numbers prominent, labels tiny
- * - Maximum information per pixel
- */
-
 import { useState, useEffect, useMemo } from 'react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Loader2 } from 'lucide-react';
 import { format, subDays, eachDayOfInterval, parseISO } from 'date-fns';
 import { useRouter } from 'next/navigation';
 import type { DashboardResponse, Commit, CommitsResponse } from '@/lib/types';
-import { getProjectColor, getProjectName, formatMinutes, getProjectCategory, PROJECT_COLORS } from '@/lib/diary-utils';
+import { getProjectColor, getProjectName, formatMinutes } from '@/lib/diary-utils';
 
 type PeriodType = 'today' | 'week' | '15days' | 'month';
 
@@ -103,7 +95,6 @@ export function DiaryUltraA() {
 
   return (
     <div className="p-2 text-[11px] space-y-2">
-      {/* Header: Period + Stats Row */}
       <div className="flex items-center gap-3 border-b pb-2">
         <Select value={period} onValueChange={(v) => setPeriod(v as PeriodType)}>
           <SelectTrigger className="w-20 h-6 text-[10px]"><SelectValue /></SelectTrigger>
@@ -127,12 +118,9 @@ export function DiaryUltraA() {
         )}
       </div>
 
-      {/* 3-Column Grid */}
       <div className="grid grid-cols-3 gap-2">
-        {/* Col 1: Sparkline + Daily */}
         <div className="space-y-1">
           <div className="text-[9px] text-muted-foreground uppercase tracking-wider">7-Day Activity</div>
-          {/* Sparkline SVG */}
           <svg className="w-full h-10" viewBox="0 0 100 30">
             <polyline
               fill="none"
@@ -141,26 +129,16 @@ export function DiaryUltraA() {
               points={dailyData.map((d, i) => `${i * (100 / 6)},${30 - (d.hours / maxHours) * 28}`).join(' ')}
             />
             {dailyData.map((d, i) => (
-              <circle
-                key={d.date}
-                cx={i * (100 / 6)}
-                cy={30 - (d.hours / maxHours) * 28}
-                r="2"
-                fill="hsl(var(--primary))"
-              />
+              <circle key={d.date} cx={i * (100 / 6)} cy={30 - (d.hours / maxHours) * 28} r="2" fill="hsl(var(--primary))" />
             ))}
           </svg>
-          {/* Mini day labels */}
           <div className="flex justify-between text-[8px] text-muted-foreground">
-            {dailyData.map(d => (
-              <span key={d.date}>{format(parseISO(d.date), 'E')[0]}</span>
-            ))}
+            {dailyData.map(d => <span key={d.date}>{format(parseISO(d.date), 'E')[0]}</span>)}
           </div>
-          {/* Daily breakdown */}
           <div className="space-y-0.5 mt-1">
             {dailyData.map(d => (
               <div key={d.date} className="flex items-center gap-1 cursor-pointer hover:bg-muted/50" onClick={() => router.push(`/diary/${d.date}`)}>
-                <span className="w-6 text-muted-foreground">{format(parseISO(d.date), 'E')}</span>
+                <span className="w-6 text-muted-foreground">{format(parseISO(d.date), 'EEE')}</span>
                 <div className="flex-1 h-1.5 bg-muted rounded">
                   <div className="h-full bg-primary/70 rounded" style={{ width: `${(d.hours / maxHours) * 100}%` }} />
                 </div>
@@ -170,7 +148,6 @@ export function DiaryUltraA() {
           </div>
         </div>
 
-        {/* Col 2: Projects */}
         <div className="space-y-1">
           <div className="text-[9px] text-muted-foreground uppercase tracking-wider">Projects</div>
           <div className="space-y-0.5">
@@ -184,7 +161,6 @@ export function DiaryUltraA() {
           </div>
         </div>
 
-        {/* Col 3: Commands + Sessions */}
         <div className="space-y-2">
           <div>
             <div className="text-[9px] text-muted-foreground uppercase tracking-wider">Commands</div>
@@ -211,7 +187,6 @@ export function DiaryUltraA() {
         </div>
       </div>
 
-      {/* Commits Row */}
       {commits.length > 0 && (
         <div className="border-t pt-1">
           <div className="text-[9px] text-muted-foreground uppercase tracking-wider mb-0.5">Commits ({commits.length})</div>

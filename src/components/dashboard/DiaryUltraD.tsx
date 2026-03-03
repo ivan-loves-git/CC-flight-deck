@@ -1,14 +1,5 @@
 'use client';
 
-/**
- * Variant D: "Single Screen Table"
- * - Everything in horizontal rows
- * - No cards, pure data rows
- * - Table-like without table structure
- * - Maximum vertical compression
- * - Every pixel counts
- */
-
 import { useState, useEffect, useMemo } from 'react';
 import { Loader2 } from 'lucide-react';
 import { format, subDays, eachDayOfInterval, parseISO } from 'date-fns';
@@ -71,26 +62,7 @@ export function DiaryUltraD() {
     return eachDayOfInterval({ start: subDays(today, 6), end: today }).map(day => {
       const key = format(day, 'yyyy-MM-dd');
       const d = data.stats?.daily[key];
-      // Get projects for this day
-      const dayProjects: Record<string, number> = {};
-      if (data?.sessions) {
-        for (const s of data.sessions) {
-          if (s.date === key) {
-            for (const p of s.projects) {
-              dayProjects[p] = (dayProjects[p] || 0) + s.activeMinutes;
-            }
-          }
-        }
-      }
-      const topProj = Object.entries(dayProjects).sort(([,a],[,b]) => b - a)[0];
-      return {
-        date: key,
-        day: format(day, 'EEE'),
-        hours: (d?.activeMinutes || 0) / 60,
-        sessions: d?.sessions || 0,
-        topProject: topProj ? topProj[0] : null,
-        commands: d?.topCommands?.slice(0, 3) || [],
-      };
+      return { date: key, day: format(day, 'EEE'), hours: (d?.activeMinutes || 0) / 60, sessions: d?.sessions || 0 };
     });
   }, [data, today]);
 
@@ -117,7 +89,6 @@ export function DiaryUltraD() {
 
   return (
     <div className="p-1.5 text-[9px] leading-[1.4]">
-      {/* Header Stats - Single Line */}
       {stats && (
         <div className="flex items-center gap-3 border-b pb-1 mb-1.5 text-[10px]">
           <span className="font-bold text-primary">{stats.hours}h</span>
@@ -130,17 +101,11 @@ export function DiaryUltraD() {
         </div>
       )}
 
-      {/* 4-Column Super Dense Grid */}
       <div className="grid grid-cols-4 gap-x-2 gap-y-1">
-        {/* Col 1: Daily Activity */}
         <div>
           <div className="text-[8px] text-muted-foreground border-b mb-0.5">DAILY</div>
           {dailyData.map(d => (
-            <div
-              key={d.date}
-              className="flex items-center gap-0.5 cursor-pointer hover:bg-muted/50"
-              onClick={() => router.push(`/diary/${d.date}`)}
-            >
+            <div key={d.date} className="flex items-center gap-0.5 cursor-pointer hover:bg-muted/50" onClick={() => router.push(`/diary/${d.date}`)}>
               <span className="w-6 text-muted-foreground">{d.day}</span>
               <div className="w-12 h-1 bg-muted rounded-sm overflow-hidden">
                 <div className="h-full bg-primary" style={{ width: `${(d.hours / maxHours) * 100}%` }} />
@@ -150,7 +115,6 @@ export function DiaryUltraD() {
           ))}
         </div>
 
-        {/* Col 2: Projects */}
         <div>
           <div className="text-[8px] text-muted-foreground border-b mb-0.5">PROJECTS</div>
           {topProjects.map(([name, proj]) => (
@@ -164,7 +128,6 @@ export function DiaryUltraD() {
           ))}
         </div>
 
-        {/* Col 3: Commands */}
         <div>
           <div className="text-[8px] text-muted-foreground border-b mb-0.5">COMMANDS</div>
           {topCommands.map(([name, cmd]) => (
@@ -178,15 +141,10 @@ export function DiaryUltraD() {
           ))}
         </div>
 
-        {/* Col 4: Sessions + Commits */}
         <div>
           <div className="text-[8px] text-muted-foreground border-b mb-0.5">SESSIONS</div>
           {data.sessions?.slice(0, 5).map(s => (
-            <div
-              key={s.id}
-              className="flex items-center gap-0.5 cursor-pointer hover:bg-muted/50"
-              onClick={() => router.push(`/diary/${s.date}`)}
-            >
+            <div key={s.id} className="flex items-center gap-0.5 cursor-pointer hover:bg-muted/50" onClick={() => router.push(`/diary/${s.date}`)}>
               <span className="text-muted-foreground">{format(parseISO(s.date), 'M/d')}</span>
               <span className="truncate flex-1">{s.projects[0] ? getProjectName(s.projects[0]).slice(0, 10) : '-'}</span>
               <span className="text-muted-foreground">{formatMinutes(s.activeMinutes)}</span>
@@ -206,7 +164,6 @@ export function DiaryUltraD() {
         </div>
       </div>
 
-      {/* Micro Activity Heatmap - Bottom */}
       <div className="border-t mt-1.5 pt-1">
         <div className="flex items-center gap-0.5">
           <span className="text-[8px] text-muted-foreground w-12">7-day:</span>
@@ -214,11 +171,7 @@ export function DiaryUltraD() {
             const intensity = d.hours === 0 ? 0 : d.hours < 2 ? 1 : d.hours < 4 ? 2 : d.hours < 8 ? 3 : 4;
             const colors = ['bg-zinc-800', 'bg-green-900', 'bg-green-700', 'bg-green-500', 'bg-green-400'];
             return (
-              <div
-                key={d.date}
-                className={`w-6 h-3 rounded-sm ${colors[intensity]} cursor-pointer`}
-                onClick={() => router.push(`/diary/${d.date}`)}
-              >
+              <div key={d.date} className={`w-6 h-3 rounded-sm ${colors[intensity]} cursor-pointer`} onClick={() => router.push(`/diary/${d.date}`)}>
                 <span className="text-[7px] text-center block text-white/70">{d.day[0]}</span>
               </div>
             );
