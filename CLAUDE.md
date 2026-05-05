@@ -41,141 +41,17 @@ npm run dev   # Start development server at localhost:3000
 npm run build # Build for production
 ```
 
----
+## Verification
+After changes: `npm run build` — fix root causes, don't suppress errors.
 
-# Technical Debt & Improvement Guidelines
+## Conventions
+- Components: PascalCase (`DiaryView.tsx`). Keep under 200 lines.
+- Hooks: `useFooBar.ts` in `/src/hooks/`.
+- Path constants: `/src/lib/constants.ts` (single source).
+- Shared types: `/src/lib/types.ts`.
+- Helpers: `/src/lib/diary-utils.ts`.
 
-## Priority 1: Dead Code to Remove (~1,500 lines) - DONE
-
-~~Deleted on 2026-01-12:~~
-- ~~DiaryVariantA.tsx, DiaryVariantB.tsx, DiaryVariantC.tsx, DiaryVariantD.tsx~~
-- ~~DiaryViewCompact.tsx, DiaryUltraA.tsx, DiaryUltraB.tsx, DiaryUltraC.tsx, DiaryUltraD.tsx~~
-- ~~diary/variants/page.tsx~~
-- ~~Unused addFavorite/removeFavorite functions in favorites.ts~~
-- ~~SPEC-DIARY-REDESIGN.md, PRODUCT_SPEC.md, IMPROVEMENT_ANALYSIS.md, DATA_FLOW_ARCHITECTURE.md~~
-- ~~Unused sidebar category types and icon imports~~
-
----
-
-## Priority 2: Code Duplication to Consolidate - DONE
-
-~~Consolidated on 2026-01-12:~~
-- ~~Helper functions (PROJECT_COLORS, getProjectColor, getProjectName, formatMinutes, formatFileSize, extractTimeFromId) → `/src/lib/diary-utils.ts`~~
-- ~~Shared types (Session, DiaryResponse, FlightData, DayDetail) → `/src/lib/types.ts`~~
-- ~~Path constants (FLIGHT_DATA_PATH, ITERM_LOGS_PATH, USAGE_STATS_PATH, CLAUDE_CONFIG_PATH) → `/src/lib/constants.ts`~~
-- ~~Deleted unused List components (CommandList, AgentList, SkillList, HookList, PluginList) - were dead code~~
-
-### Remaining (Low Priority)
-Scanner pattern duplication in `commands.ts`, `agents.ts`, `skills.ts`, `hooks.ts` - could extract `scanWithPlugins()` helper but not critical
-
----
-
-## Priority 3: Performance Optimizations - PARTIALLY DONE
-
-### In-Memory Caching - DONE
-~~Added on 2026-01-12:~~
-- ~~5-minute TTL cache in `/src/lib/scanner/usage.ts`~~
-- ~~File modification tracking to invalidate stale cache~~
-- ~~`clearUsageStatsCache()` and `getCacheInfo()` helpers~~
-
-### Remaining Items (Low Priority)
-
-**Dual Fetch Calls in DiaryView**
-```typescript
-const diaryRes = await fetch('/api/diary');   // Reads flight-data.json
-const flightResponse = await fetch('/api/scan'); // Reads same file again!
-```
-Could create unified `/api/dashboard` endpoint but not critical with caching
-
-**Unstable useMemo Dependency**
-```typescript
-const periodStats = useMemo(() => {...}, [data, period, periodConfig, today]);
-// `today` is `new Date()` - creates new reference every render!
-```
-Should memoize `today` with `useMemo(() => new Date(), [])`
-
----
-
-## Priority 4: Architecture Improvements
-
-### Monolithic Components to Split
-- `page.tsx` (526 lines) - Extract data fetching to custom hooks
-- `DiaryView.tsx` (638 lines) - Split into sub-components:
-  - `DiaryKPIGrid.tsx`
-  - `DiaryActivityChart.tsx`
-  - `DiaryProjectsBar.tsx`
-  - `DiaryCommandsCloud.tsx`
-  - `DiarySessionsTable.tsx`
-
-### Missing Custom Hooks Directory
-Extract reusable logic to `/src/hooks/`:
-- `useDiaryData.ts` - Diary data fetching
-- `useFavorites.ts` - Favorites management
-- `useLocalStorage.ts` - Generic localStorage hook
-
-### Inconsistent Styling
-Standardize across components:
-- Headers: Use `text-xl font-semibold` consistently
-- Icons: Use `className="h-5 w-5"` consistently (not `size={20}`)
-- Import style: Use `import fs from 'fs'` consistently (not destructured)
-
----
-
-## New Features Added (2026-01-12)
-
-### Data Health Warnings (`/src/lib/data-health.ts`)
-Detects data quality issues:
-- Identical session durations (calculation fallback indicator)
-- Days exceeding 16 hours (parallel session indicator)
-- Sessions without project association
-- Very short sessions (<2 min)
-
-### Daily Insights (`/src/lib/insights.ts`)
-Pattern detection and nudges:
-- Coding streaks (consecutive days)
-- Productivity trends (week-over-week)
-- Hour/session milestones
-- Start time pattern shifts (early bird/night owl)
-- Forgotten tools (unused commands)
-- Weekend vs weekday patterns
-
-### Export Functionality (`/src/app/api/export/route.ts`)
-- JSON and CSV format support
-- Date range filtering
-- Accessible via Export dropdown in DiaryView header
-
-### Enhanced Session Details
-- Idle time tracking (`idleMinutesExcluded` field)
-- Commits section on day detail page
-
----
-
-## Code Quality Metrics
-
-| Metric | Before | After | Target |
-|--------|--------|-------|--------|
-| Dead code | ~1,800 LOC | 0 | 0 ✓ |
-| Duplicate interfaces | 8+ | 0 | 0 ✓ |
-| Duplicate helpers | 5+ files | 1 file | 1 file ✓ |
-| Duplicate path constants | 3 files | 1 file | 1 file ✓ |
-| Component max lines | 638 | ~700 | 200 |
-| Type coverage | 95% | 98% | 100% |
-| New feature modules | 0 | 4 | - |
-
----
-
-## File Naming Conventions
-
-- Components: PascalCase (`DiaryView.tsx`)
-- Hooks: camelCase with `use` prefix (`useDiaryData.ts`)
-- Utils: camelCase (`diary-utils.ts`)
-- Types: PascalCase in `types.ts`
-- Constants: SCREAMING_SNAKE_CASE
-
-## Component Guidelines
-
-1. Keep components under 200 lines
-2. Extract complex logic to custom hooks
-3. Use `useMemo` for expensive computations (with stable dependencies)
-4. Avoid creating new function references in render (use `useCallback`)
-5. Prefer composition over large monolithic components
+## Open improvements (low priority)
+- `page.tsx` (526 lines) and `DiaryView.tsx` (638 lines) over the 200-line target — split when next touched.
+- DiaryView fetches `/api/diary` and `/api/scan` separately; could unify under `/api/dashboard` but caching makes it non-urgent.
+- `today = new Date()` in DiaryView's `useMemo` deps creates a new ref every render — wrap with `useMemo(() => new Date(), [])`.
